@@ -3,7 +3,7 @@
 */
 
 /*
-* DGus ´°¿ÚÀàµÄ¶¨Òå
+* DGus ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½
 */
 
 #include "../../MarlinCore.h"
@@ -34,7 +34,7 @@ void DGUS_Screen_ZOffset::manage_manual_move()
 	}
 }
 
-// ×Ô¶¯µ÷Æ½²Ëµ¥ 
+// ï¿½Ô¶ï¿½ï¿½ï¿½Æ½ï¿½Ëµï¿½ 
 void DGUS_Screen_ZOffset::Init()
 {
 	dgus.ShowMovingMessage();
@@ -102,9 +102,9 @@ void DGUS_Screen_ZOffset::KeyProcess()
 			}
 			else if (gltouchpara.value == KEY_ZOFFSET_DEC)
 			{
-				zoffset_current -= 0.1;
+				zoffset_current -= 0.02;
 				if (zoffset_current >= -9.9) 
-					current_position[Z_AXIS] -= 0.1;
+					current_position[Z_AXIS] -= 0.02;
 				else
 					zoffset_current = -9.9;
 				manual_move_to_current(Z_AXIS);
@@ -112,9 +112,9 @@ void DGUS_Screen_ZOffset::KeyProcess()
 			}
 			else if (gltouchpara.value == KEY_ZOFFSET_ADD)
 			{
-				zoffset_current += 0.1;
+				zoffset_current += 0.02;
 				if (zoffset_current <= 9.9)
-					current_position[Z_AXIS] += 0.1;
+					current_position[Z_AXIS] += 0.02;
 				else
 					zoffset_current = 9.9;
 				manual_move_to_current(Z_AXIS);
