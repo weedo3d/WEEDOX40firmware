@@ -42,7 +42,7 @@ void DGUS_Screen_Job::KeyProcess()
             {
                 queue.enqueue_one_P(PSTR("M211 S0"));
                 queue.enqueue_one_P(PSTR("G91"));
-                queue.enqueue_one_P(PSTR("G1 X-1 F500"));
+                queue.enqueue_one_P(PSTR("G1 X-1 F1000"));
                 queue.enqueue_one_P(PSTR("M211 S1"));
             }
 		}
@@ -52,7 +52,7 @@ void DGUS_Screen_Job::KeyProcess()
             {
                 queue.enqueue_one_P(PSTR("M211 S0"));
                 queue.enqueue_one_P(PSTR("G91"));
-                queue.enqueue_one_P(PSTR("G1 X-10 F1000"));
+                queue.enqueue_one_P(PSTR("G1 X-2 F2000"));
                 queue.enqueue_one_P(PSTR("M211 S1"));
             }
 		}
@@ -62,7 +62,7 @@ void DGUS_Screen_Job::KeyProcess()
             {
                 queue.enqueue_one_P(PSTR("M211 S0"));
                 queue.enqueue_one_P(PSTR("G91"));
-                queue.enqueue_one_P(PSTR("G1 X-50 F2000"));
+                queue.enqueue_one_P(PSTR("G1 X-4 F4000"));
                 queue.enqueue_one_P(PSTR("M211 S1"));
             }
 		}
@@ -72,7 +72,7 @@ void DGUS_Screen_Job::KeyProcess()
             {
                 queue.enqueue_one_P(PSTR("M211 S0"));
                 queue.enqueue_one_P(PSTR("G91"));
-                queue.enqueue_one_P(PSTR("G1 X1 F500"));
+                queue.enqueue_one_P(PSTR("G1 X1 F1000"));
                 queue.enqueue_one_P(PSTR("M211 S1"));
             }
 		}
@@ -82,7 +82,7 @@ void DGUS_Screen_Job::KeyProcess()
             {
                 queue.enqueue_one_P(PSTR("M211 S0"));
                 queue.enqueue_one_P(PSTR("G91"));
-                queue.enqueue_one_P(PSTR("G1 X10 F1000"));
+                queue.enqueue_one_P(PSTR("G1 X2 F2000"));
                 queue.enqueue_one_P(PSTR("M211 S1"));
             }
 		}
@@ -92,7 +92,7 @@ void DGUS_Screen_Job::KeyProcess()
             {
                 queue.enqueue_one_P(PSTR("M211 S0"));
                 queue.enqueue_one_P(PSTR("G91"));
-                queue.enqueue_one_P(PSTR("G1 X50 F2000"));
+                queue.enqueue_one_P(PSTR("G1 X4 F4000"));
                 queue.enqueue_one_P(PSTR("M211 S1"));
             }
 		}
@@ -102,7 +102,7 @@ void DGUS_Screen_Job::KeyProcess()
             {
                 queue.enqueue_one_P(PSTR("M211 S0"));
                 queue.enqueue_one_P(PSTR("G91"));
-                queue.enqueue_one_P(PSTR("G1 Y1 F500"));
+                queue.enqueue_one_P(PSTR("G1 Y1 F1000"));
                 queue.enqueue_one_P(PSTR("M211 S1"));
             }
 		}
@@ -112,7 +112,7 @@ void DGUS_Screen_Job::KeyProcess()
             {
                 queue.enqueue_one_P(PSTR("M211 S0"));
                 queue.enqueue_one_P(PSTR("G91"));
-                queue.enqueue_one_P(PSTR("G1 Y10 F1000"));
+                queue.enqueue_one_P(PSTR("G1 Y2 F2000"));
                 queue.enqueue_one_P(PSTR("M211 S1"));
             }
 		}
@@ -122,7 +122,7 @@ void DGUS_Screen_Job::KeyProcess()
             {
                 queue.enqueue_one_P(PSTR("M211 S0"));
                 queue.enqueue_one_P(PSTR("G91"));
-                queue.enqueue_one_P(PSTR("G1 Y50 F2000"));
+                queue.enqueue_one_P(PSTR("G1 Y4 F4000"));
                 queue.enqueue_one_P(PSTR("M211 S1"));
             }
 		}
@@ -132,7 +132,7 @@ void DGUS_Screen_Job::KeyProcess()
             {
                 queue.enqueue_one_P(PSTR("M211 S0"));
                 queue.enqueue_one_P(PSTR("G91"));
-                queue.enqueue_one_P(PSTR("G1 Y-1 F500"));
+                queue.enqueue_one_P(PSTR("G1 Y-1 F1000"));
                 queue.enqueue_one_P(PSTR("M211 S1"));
             }
 		}
@@ -142,7 +142,7 @@ void DGUS_Screen_Job::KeyProcess()
             {
                 queue.enqueue_one_P(PSTR("M211 S0"));
                 queue.enqueue_one_P(PSTR("G91"));
-                queue.enqueue_one_P(PSTR("G1 Y-10 F1000"));
+                queue.enqueue_one_P(PSTR("G1 Y-2 F2000"));
                 queue.enqueue_one_P(PSTR("M211 S1"));
             }
 		}
@@ -152,7 +152,7 @@ void DGUS_Screen_Job::KeyProcess()
             {
                 queue.enqueue_one_P(PSTR("M211 S0"));
                 queue.enqueue_one_P(PSTR("G91"));
-                queue.enqueue_one_P(PSTR("G1 Y-50 F2000"));
+                queue.enqueue_one_P(PSTR("G1 Y-4 F4000"));
                 queue.enqueue_one_P(PSTR("M211 S1"));
             }
 		}
@@ -172,7 +172,7 @@ void DGUS_Screen_Job::KeyProcess()
             {
                 queue.enqueue_one_P(PSTR("M211 S0"));
                 queue.enqueue_one_P(PSTR("G91"));
-                queue.enqueue_one_P(PSTR("G1 Z1 F300"));
+                queue.enqueue_one_P(PSTR("G1 Z0.5 F500"));
                 queue.enqueue_one_P(PSTR("M211 S1"));
             }
 		}
@@ -182,7 +182,7 @@ void DGUS_Screen_Job::KeyProcess()
             {
                 queue.enqueue_one_P(PSTR("M211 S0"));
                 queue.enqueue_one_P(PSTR("G91"));
-                queue.enqueue_one_P(PSTR("G1 Z10 F500"));
+                queue.enqueue_one_P(PSTR("G1 Z1 F1000"));
                 queue.enqueue_one_P(PSTR("M211 S1"));
             }
 		}
@@ -202,7 +202,7 @@ void DGUS_Screen_Job::KeyProcess()
             {
                 queue.enqueue_one_P(PSTR("M211 S0"));
                 queue.enqueue_one_P(PSTR("G91"));
-                queue.enqueue_one_P(PSTR("G1 Z-1 F300"));
+                queue.enqueue_one_P(PSTR("G1 Z-0.5 F500"));
                 queue.enqueue_one_P(PSTR("M211 S1"));
             }
 		}
@@ -212,7 +212,7 @@ void DGUS_Screen_Job::KeyProcess()
             {
                 queue.enqueue_one_P(PSTR("M211 S0"));
                 queue.enqueue_one_P(PSTR("G91"));
-                queue.enqueue_one_P(PSTR("G1 Z-10 F500"));
+                queue.enqueue_one_P(PSTR("G1 Z-1 F1000"));
                 queue.enqueue_one_P(PSTR("M211 S1"));
             }
 		}
