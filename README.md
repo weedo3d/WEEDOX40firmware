@@ -41,4 +41,6 @@ The official firmware has the function of upgrading the firmware via TF card. Us
 The community version firmware does not support the wfm format, so it does not support firmware upgrade via TF card.
 
 
+## Return to the official vesrion firmware
 
+Use WEEDOIAP.exe to flash X40_Vxxx_Community_to_Official.bin in the /Release directory.
