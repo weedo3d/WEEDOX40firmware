@@ -32,22 +32,24 @@
 
 FilamentMonitor runout;
 
-bool FilamentMonitorBase::enabled = true,
-     FilamentMonitorBase::filament_ran_out;  // = false
+bool FilamentMonitor::enabled = true,
+     FilamentMonitor::filament_ran_out;  // = false
+
+uint8_t FilamentMonitor::last_active_extruder = 0;
 
 #if ENABLED(HOST_ACTION_COMMANDS)
-  bool FilamentMonitorBase::host_handling; // = false
+  bool FilamentMonitor::host_handling; // = false
 #endif
 
 /**
  * Called by FilamentSensorSwitch::run when filament is detected.
  * Called by FilamentSensorEncoder::block_completed when motion is detected.
  */
-void FilamentSensorBase::filament_present(const uint8_t extruder) {
+void FilamentSensorSwitch::filament_present(const uint8_t extruder) {
   runout.filament_present(extruder); // calls response.filament_present(extruder)
 }
 
-int8_t RunoutResponseDebounced::runout_count; // = 0
+int16_t RunoutResponseDebounced::runout_count; // = 0
 
 
 //

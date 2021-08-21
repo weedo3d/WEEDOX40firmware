@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #ifndef WTDGUSSCREEN_SCROLL_LIST_H
@@ -16,7 +12,6 @@
 #define DGUS_SCROLL_LIST_LINE_COUNT         9
 #define DGUS_SCROLL_LIST_TOTAL_MAX          400
 
-// GCode文件预览界面
 class DGUS_Screen_ScrollList : public DGUS_Screen_Base
 {
 public:

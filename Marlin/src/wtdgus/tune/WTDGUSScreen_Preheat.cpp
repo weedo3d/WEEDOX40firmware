@@ -1,10 +1,7 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
-/*
-* DGus 窗口类的定义
-*/
 
 #include "../../MarlinCore.h"
 #include "../../module/temperature.h"
@@ -20,7 +17,7 @@
 #define PREHEAT_TARGET_BED		80
 
 #ifdef DGUS_LCD
-// 手动加热菜单 
+
 void DGUS_Screen_Preheat::Init()
 {
 	dserial.LoadScreen(SCREEN_TEMP_SETTING);
@@ -149,7 +146,7 @@ void DGUS_Screen_Preheat::KeyProcess()
 		{
 			gltouchpara.validflg = false;
 			if (gltouchpara.value == KEY_HELP1_BUTTON_RETURN)
-			{	// 返回自检界面
+			{	
 				dserial.LoadScreen(SCREEN_TEMP_SETTING);
 			}
 		}
@@ -167,23 +164,6 @@ void DGUS_Screen_Preheat::ShowTemperature(void)
         dserial.SendTemp(ADDR_HEAT_TEXT_TEMP1, temp_nozzle0);
         dserial.SendTemp(ADDR_HEAT_TEXT_TEMP3, temp_nozzle1);
         dserial.SendTemp(ADDR_HEAT_TEXT_TEMP2, temp_bed);
-
-		// char b[10];
-
-        // // temp0
-        // ZERO(b);
-		// sprintf_P(b, TEMP_STRING, temp_nozzle0);
-		// dserial.SendString(ADDR_HEAT_TEXT_TEMP1, b, 10);
-
-        // // temp1
-        // ZERO(b);
-		// sprintf_P(b, TEMP_STRING, temp_nozzle1);
-		// dserial.SendString(ADDR_HEAT_TEXT_TEMP3, b, 10);
-
-        // // bed
-		// ZERO(b);
-		// sprintf_P(b, TEMP_STRING, temp_bed);
-		// dserial.SendString(ADDR_HEAT_TEXT_TEMP2, b, 10);
 
         // temp0 bar
 		if (temp_nozzle0 < target_nozzle0 && begin_nozzle0 < target_nozzle0)

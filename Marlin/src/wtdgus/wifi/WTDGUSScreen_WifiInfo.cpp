@@ -1,10 +1,7 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
-/*
-* DGus 
-*/
 
 #include "../../MarlinCore.h"
 #include "../../module/temperature.h"
@@ -27,10 +24,8 @@ extern char esp32_ap[32];
 #ifdef DGUS_LCD
 void DGUS_Screen_WifiInfo::Init()
 {
-	//SERIAL_ECHOLNPGM("load screen machine info");
 	dserial.LoadScreen(SCREEN_MACHINE_INFO);
 	holdontime = getcurrenttime();
-	//WT_Get_ESP32Version();
 
 	dserial.SendString(ADDR_MACHINE_TITLE, MMSG_WIFI_INFO_TITLE[wtvar_language], TEXTLEN_MACHINE_TITLE);
 	dserial.SendString(ADDR_MACHINE_BUTTON2, MMSG_BACK[wtvar_language], TEXTLEN_MACHINE_BUTTON);
@@ -38,15 +33,12 @@ void DGUS_Screen_WifiInfo::Init()
 
 	dserial.SendInt16(ADDR_MACHINE_ICON_HELP, ENUM_HELP_ICON_NOHELP);
 
-	// 设备名称
 	dserial.SendString(ADDR_MACHINE_ITEM1, MMSG_MACHINE_ITEM1[wtvar_language], TEXTLEN_MACHINE_ITEM);
 	dserial.SendString(ADDR_MACHINE_VALUE1, esp32_name, TEXTLEN_MACHINE_ITEM);
 
-	// 设备序列号
 	dserial.SendString(ADDR_MACHINE_ITEM2, MMSG_MACHINE_ITEM5[wtvar_language], TEXTLEN_MACHINE_ITEM);
 	dserial.SendString(ADDR_MACHINE_VALUE2, esp32_serial, TEXTLEN_MACHINE_ITEM);
 
-	// 固件版本
 	dserial.SendString(ADDR_MACHINE_ITEM3, MMSG_MACHINE_ITEM3[wtvar_language], TEXTLEN_MACHINE_ITEM);
 	dserial.SendString(ADDR_MACHINE_VALUE3, esp32_version, TEXTLEN_MACHINE_ITEM);
 
@@ -58,7 +50,6 @@ void DGUS_Screen_WifiInfo::Init()
 	dserial.SendString(ADDR_MACHINE_ITEM5, MMSG_WIFI_INFO_AP[wtvar_language], TEXTLEN_MACHINE_ITEM);
 	dserial.SendString(ADDR_MACHINE_VALUE5, esp32_ap, TEXTLEN_MACHINE_ITEM);
 
-	// 云平台
 	dserial.SendString(ADDR_MACHINE_ITEM6, MMSG_WIFI_INFO_CLOUD[wtvar_language], TEXTLEN_MACHINE_ITEM);
 	dserial.SendString(ADDR_MACHINE_VALUE6, tb_state, TEXTLEN_MACHINE_ITEM);
 

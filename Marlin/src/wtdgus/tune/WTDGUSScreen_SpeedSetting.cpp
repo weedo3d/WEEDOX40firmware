@@ -1,10 +1,7 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
-/*
-* DGus 窗口类的定义
-*/
 
 #include "../../MarlinCore.h"
 #include "../../module/motion.h"
@@ -15,7 +12,7 @@
 #include "../WTHelpDoc.h"
 
 #ifdef DGUS_LCD
-// 设置菜单 
+
 void DGUS_Screen_Speed::Init()
 {
 	dserial.LoadScreen(SCREEN_SPEED_SETTING);
@@ -109,7 +106,7 @@ void DGUS_Screen_Speed::KeyProcess()
 		{
 			gltouchpara.validflg = false;
 			if (gltouchpara.value == KEY_HELP1_BUTTON_RETURN)
-			{	// 返回速度界面
+			{	
 				dserial.LoadScreen(SCREEN_SPEED_SETTING);
 			}
 		}

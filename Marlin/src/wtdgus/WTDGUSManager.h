@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #ifndef WTDGUSMANAGER_H
@@ -46,6 +46,8 @@
 #include "wifi/WTDGUSScreen_WifiInfo.h"
 #include "wifi/WTDGUSScreen_WifiDisk.h"
 #include "control/WTDGUSScreen_IAP.h"
+#include "print/WTDGUSScreen_Babystep.h"
+#include "print/WTDGUSScreen_Switch.h"
 
 #if ENABLED(DUAL_X_CARRIAGE)
 #include "print/WTDGUSScreen_Fitness.h"
@@ -80,7 +82,7 @@ typedef struct
 	wt_fileinfo_t fileinfo;
 	long date;
 	uint16_t index;
-	bool remote;			// 是否为WIFICAM发来
+	bool remote;			
 } wt_job_info_t;
 
 class DGUSManager
@@ -139,6 +141,8 @@ public:
 	void GotoWifiInfo(void) { GotoScreen(screenWifiInfo); }
 	void GotoWifiDisk(void) { GotoScreen(screenWifiDisk); }
 	void GotoIAPMenu(void) { GotoScreen(screenIAP); }
+	void GotoBabystepMenu(void) { GotoScreen(screenBabystep); }
+	void GotoManualSwitchMenu(void) { GotoScreen(screenSwitch); }
 
     #if ENABLED(DUAL_X_CARRIAGE)
     void GotoFitnessErrorMenu(void);
@@ -203,7 +207,6 @@ private:
 	uint8_t lcd_sd_status;
 	bool testingMode;
 
-	// 类型实例定义
 	DGUS_Screen_Main* screenMain;
 	DGUS_Screen_Prepare* screenPrepare;
 	DGUS_Screen_Control* screenControl;
@@ -242,6 +245,8 @@ private:
 	DGUS_Screen_WifiInfo* screenWifiInfo;
 	DGUS_Screen_WifiDisk* screenWifiDisk;
 	DGUS_Screen_IAP* screenIAP;
+	DGUS_Screen_Babystep* screenBabystep;
+	DGUS_Screen_Switch* screenSwitch;
 
     #if ENABLED(DUAL_X_CARRIAGE)
     DGUS_Screen_Fitness* screenFitness;

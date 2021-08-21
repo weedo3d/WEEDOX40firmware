@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "../../MarlinCore.h"
@@ -19,7 +15,7 @@
 #include "../../feature/runout.h"
 
 #ifdef DGUS_LCD
-// 设置菜单 
+
 void DGUS_Screen_Control::Init()
 {
 	dserial.LoadScreen(SCREEN_SETTING);
@@ -54,7 +50,7 @@ void DGUS_Screen_Control::KeyProcess()
 			{
 				ShowNextPage();
 
-                if (pageid == 2)
+                if (pageid == 3)
                 {
                 	clickCount++;
 					if (clickCount >= 10)
@@ -71,13 +67,11 @@ void DGUS_Screen_Control::KeyProcess()
 			else if (gltouchpara.value == KEY_SETTING_ITEM1)
 			{
 				if (pageid == 0)
-				{	// 第1页第1项
-                    // wifi设置
+				{	
 					dgus.GotoWifiSettingMenu();
 				}
 				else if (pageid == 1)
-				{	// 第2页第1项
-                    // 保存关机
+				{	
                     if (wtvar_enablepoweroff)
 					{
 						wtvar_enablepoweroff = 0;
@@ -91,25 +85,38 @@ void DGUS_Screen_Control::KeyProcess()
 					(void)settings.save();
 				}
 				else if (pageid == 2)
-				{	// 第3页第1项
-                    // 节能设置
-                    dgus.GotoPowerSaveMenu();
+				{	
+                    if (wtvar_enableselftest)
+					{
+						wtvar_enableselftest = 0;
+						dserial.SendInt16(ADDR_SETTING_ICON_ITEM1, ENUM_OPTION_OFF);
+					}
+					else
+					{
+						wtvar_enableselftest = 1;
+						dserial.SendInt16(ADDR_SETTING_ICON_ITEM1, ENUM_OPTION_ON);
+					}
+					(void)settings.save();	
+				}
+				else if (pageid == 3)
+				{	
+                    dgus.GotoIAPMenu();
 				}
 			}
 			else if (gltouchpara.value == KEY_SETTING_ITEM2)
 			{
 				if (pageid == 0)
-				{	// 第1页第2项
-                    // 语言设置
+				{	
 					dgus.GotoLanguageMenu();
 				}
 				else if (pageid == 1)
-				{	// 第2页第2项
-                    // 断丝检测 
+				{	
                     if (wtvar_enablefilamentruncout)
 					{
+						wtvar_autoswith = 0;
 						wtvar_enablefilamentruncout = 0;
 						dserial.SendInt16(ADDR_SETTING_ICON_ITEM2, ENUM_OPTION_OFF);
+						dserial.SendInt16(ADDR_SETTING_ICON_ITEM3, ENUM_OPTION_OFF);
 						runout.enabled = false;
 					}
 					else
@@ -121,36 +128,36 @@ void DGUS_Screen_Control::KeyProcess()
 					(void)settings.save();
 				}
 				else if (pageid == 2)
-				{	// 第3页第2项
-					// 固件升级
-                    dgus.GotoIAPMenu();
+				{	
+                    dgus.GotoPowerSaveMenu();
 				}
 			}
 			else if (gltouchpara.value == KEY_SETTING_ITEM3)
 			{
 				if (pageid == 0)
-				{	// 第1页第3项
-                    // 设备信息
+				{	
 					dgus.GotoMachineInfoMenu();
 				}
 				else if (pageid == 1)
-				{	// 第2页第3项
-                    // 开机自检
-                    if (wtvar_enableselftest)
+				{	
+					if (wtvar_autoswith)
 					{
-						wtvar_enableselftest = 0;
+						wtvar_autoswith = 0;
 						dserial.SendInt16(ADDR_SETTING_ICON_ITEM3, ENUM_OPTION_OFF);
+						runout.enabled = false;
 					}
 					else
 					{
-						wtvar_enableselftest = 1;
+						wtvar_autoswith = 1;
+						wtvar_enablefilamentruncout = 1;
+						dserial.SendInt16(ADDR_SETTING_ICON_ITEM2, ENUM_OPTION_ON);
 						dserial.SendInt16(ADDR_SETTING_ICON_ITEM3, ENUM_OPTION_ON);
+						runout.enabled = true;
 					}
-					(void)settings.save();	
+					(void)settings.save();
 				}
 				else if (pageid == 2)
-				{	// 第3页第3项
-                    // 参数设置
+				{	
                     dgus.GotoRestoreSettingMenu();
 				}
 			}
@@ -163,7 +170,7 @@ void DGUS_Screen_Control::KeyProcess()
 		{
 			gltouchpara.validflg = false;
 			if (gltouchpara.value == KEY_HELP1_BUTTON_RETURN)
-			{	// 返回准备界面
+			{	
 				dserial.LoadScreen(SCREEN_SETTING);
 			}
 		}
@@ -182,7 +189,7 @@ void DGUS_Screen_Control::ShowPrePage(void)
 
 void DGUS_Screen_Control::ShowNextPage(void)
 {
-	if (pageid < 2)
+	if (pageid < 3)
 	{
 		pageid++;
 		ShowPage();
@@ -196,20 +203,14 @@ void DGUS_Screen_Control::ShowPage(void)
 		dserial.SendEmptyString(ADDR_SETTING_TEXT_PRE, TEXTLEN_SETTING_BUTTON);
 		dserial.SendString(ADDR_SETTING_TEXT_NEXT, MMSG_NEXT_PAGE[wtvar_language]);
 
-		// 第1页第1项
-        // wifi设置
 		dserial.SendInt16(ADDR_SETTING_ICON_ITEM1, ENUM_OPTION_NONE);
 		dserial.SendInt16(ADDR_SETTING_IMG_ITEM1, ENUM_SETTING_WIFI);
 		dserial.SendString(ADDR_SETTING_TEXT_ITEM1, MMSG_SETTING_WIFI[wtvar_language], TEXTLEN_SETTING_ITEM);
 
-		// 第1页第2项
-        // 语言设置
 		dserial.SendInt16(ADDR_SETTING_ICON_ITEM2, ENUM_OPTION_NONE);
 		dserial.SendInt16(ADDR_SETTING_IMG_ITEM2, ENUM_SETTING_LANGUAGE);
 		dserial.SendString(ADDR_SETTING_TEXT_ITEM2, MMSG_SETTING_LANGUAGE[wtvar_language], TEXTLEN_SETTING_ITEM);
 
-		// 第1页第3项
-        // 设备信息
 		dserial.SendInt16(ADDR_SETTING_ICON_ITEM3, ENUM_OPTION_NONE);
 		dserial.SendInt16(ADDR_SETTING_IMG_ITEM3, ENUM_SETTING_INFO);
 		dserial.SendString(ADDR_SETTING_TEXT_ITEM3, MMSG_SETTING_INFO[wtvar_language], TEXTLEN_SETTING_ITEM);
@@ -220,8 +221,6 @@ void DGUS_Screen_Control::ShowPage(void)
 		dserial.SendString(ADDR_SETTING_TEXT_PRE, MMSG_PRE_PAGE[wtvar_language]);
 		dserial.SendString(ADDR_SETTING_TEXT_NEXT, MMSG_NEXT_PAGE[wtvar_language]);
 
-		// 第2页第1项
-        // 保存关机
         if (wtvar_enablepoweroff)
 			dserial.SendInt16(ADDR_SETTING_ICON_ITEM1, ENUM_OPTION_ON);
 		else
@@ -229,8 +228,6 @@ void DGUS_Screen_Control::ShowPage(void)
 		dserial.SendInt16(ADDR_SETTING_IMG_ITEM1, ENUM_SETTING_POWEROFF);
 		dserial.SendString(ADDR_SETTING_TEXT_ITEM1, MMSG_SETTING_POWEROFF[wtvar_language], TEXTLEN_SETTING_ITEM);
 
-        // 第2页第2项
-        // 断丝检测 
 		if (wtvar_enablefilamentruncout)
 			dserial.SendInt16(ADDR_SETTING_ICON_ITEM2, ENUM_OPTION_ON);
 		else
@@ -238,38 +235,50 @@ void DGUS_Screen_Control::ShowPage(void)
 		dserial.SendInt16(ADDR_SETTING_IMG_ITEM2, ENUM_SETTING_RUNOUT);
 		dserial.SendString(ADDR_SETTING_TEXT_ITEM2, MMSG_SETTING_RUNOUT[wtvar_language], TEXTLEN_SETTING_ITEM);
 
-		// 第2页第3项
-        // 开机自检
-		if (wtvar_enableselftest)
+		if (wtvar_autoswith)
 			dserial.SendInt16(ADDR_SETTING_ICON_ITEM3, ENUM_OPTION_ON);
 		else
 			dserial.SendInt16(ADDR_SETTING_ICON_ITEM3, ENUM_OPTION_OFF);
-		dserial.SendInt16(ADDR_SETTING_IMG_ITEM3, ENUM_SETTING_SELFTEST);
-		dserial.SendString(ADDR_SETTING_TEXT_ITEM3, MMSG_SETTING_SELFTEST[wtvar_language], TEXTLEN_SETTING_ITEM);
+		dserial.SendInt16(ADDR_SETTING_IMG_ITEM3, ENUM_SETTING_NOZZLE_X);
+		dserial.SendString(ADDR_SETTING_TEXT_ITEM3, MMSG_SETTING_AUTOSWITCH[wtvar_language], TEXTLEN_SETTING_ITEM);
 
 	}
 	else if (pageid == 2)
 	{
 		dserial.SendString(ADDR_SETTING_TEXT_PRE, MMSG_PRE_PAGE[wtvar_language]);
-		dserial.SendEmptyString(ADDR_SETTING_TEXT_NEXT, TEXTLEN_SETTING_BUTTON);
+		dserial.SendString(ADDR_SETTING_TEXT_NEXT, MMSG_NEXT_PAGE[wtvar_language]);
 
-		// 第3页第1项
-        // 节能设置
-        dserial.SendInt16(ADDR_SETTING_ICON_ITEM1, ENUM_OPTION_NONE);
-		dserial.SendInt16(ADDR_SETTING_IMG_ITEM1, ENUM_SETTING_POWERSAVING);
-		dserial.SendString(ADDR_SETTING_TEXT_ITEM1, MMSG_SETTING_POWERSAVE[wtvar_language], 32);
+		if (wtvar_enableselftest)
+			dserial.SendInt16(ADDR_SETTING_ICON_ITEM1, ENUM_OPTION_ON);
+		else
+			dserial.SendInt16(ADDR_SETTING_ICON_ITEM1, ENUM_OPTION_OFF);
+		dserial.SendInt16(ADDR_SETTING_IMG_ITEM1, ENUM_SETTING_SELFTEST);
+		dserial.SendString(ADDR_SETTING_TEXT_ITEM1, MMSG_SETTING_SELFTEST[wtvar_language], 32);
 
-        // 第3页第2项
-        // 固件升级
         dserial.SendInt16(ADDR_SETTING_ICON_ITEM2, ENUM_OPTION_NONE);
-		dserial.SendInt16(ADDR_SETTING_IMG_ITEM2, ENUM_SETTING_UPDATE);
-		dserial.SendString(ADDR_SETTING_TEXT_ITEM2, MMSG_SETTING_IAP[wtvar_language], TEXTLEN_SETTING_ITEM);
+		dserial.SendInt16(ADDR_SETTING_IMG_ITEM2, ENUM_SETTING_POWERSAVING);
+		dserial.SendString(ADDR_SETTING_TEXT_ITEM2, MMSG_SETTING_POWERSAVE[wtvar_language], TEXTLEN_SETTING_ITEM);
 
-        // 第3页第3项
-        // 参数设置
         dserial.SendInt16(ADDR_SETTING_ICON_ITEM3, ENUM_OPTION_NONE);
 		dserial.SendInt16(ADDR_SETTING_IMG_ITEM3, ENUM_SETTING_RESTORE);
 		dserial.SendString(ADDR_SETTING_TEXT_ITEM3, MMSG_SETTING_RESTORE[wtvar_language], TEXTLEN_SETTING_ITEM);
+	}
+	else if (pageid == 3)
+	{
+		dserial.SendString(ADDR_SETTING_TEXT_PRE, MMSG_PRE_PAGE[wtvar_language]);
+		dserial.SendEmptyString(ADDR_SETTING_TEXT_NEXT, TEXTLEN_SETTING_BUTTON);
+
+        dserial.SendInt16(ADDR_SETTING_ICON_ITEM1, ENUM_OPTION_NONE);
+		dserial.SendInt16(ADDR_SETTING_IMG_ITEM1, ENUM_SETTING_UPDATE);
+		dserial.SendString(ADDR_SETTING_TEXT_ITEM1, MMSG_SETTING_IAP[wtvar_language], 32);
+
+		dserial.SendInt16(ADDR_SETTING_ICON_ITEM2, ENUM_OPTION_NONE);
+		dserial.SendInt16(ADDR_SETTING_IMG_ITEM2, ENUM_SETTING_NONE);
+		dserial.SendEmptyString(ADDR_SETTING_TEXT_ITEM2, TEXTLEN_SETTING_ITEM);
+
+		dserial.SendInt16(ADDR_SETTING_ICON_ITEM3, ENUM_OPTION_NONE);
+		dserial.SendInt16(ADDR_SETTING_IMG_ITEM3, ENUM_SETTING_NONE);
+		dserial.SendEmptyString(ADDR_SETTING_TEXT_ITEM3, TEXTLEN_SETTING_ITEM);
 	}
 }
 
@@ -287,6 +296,11 @@ void DGUS_Screen_Control::ShowHelp(void)
 	{
         dgus.ShowHelp(HELP_TIP13_LINE[wtvar_language]);
 	}
+	else if (pageid == 3)
+	{
+        dgus.ShowHelp(HELP_TIP15_LINE[wtvar_language]);
+	}
+	
 
 }
 #endif

@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "../../MarlinCore.h"
@@ -18,7 +14,7 @@
 #include "../WTHelpDoc.h"
 
 #ifdef DGUS_LCD
-// 自动调平菜单 
+
 void DGUS_Screen_Nozzle_Y::Init()
 {
 	dserial.LoadScreen(SCREEN_NOZZLE_OFFSET);
@@ -33,7 +29,7 @@ void DGUS_Screen_Nozzle_Y::Init()
     dserial.SendInt16(ADDR_NOFFSET_BUTTON10_ICON, 1);
 
     tempX = wtvar_tune_x2;
-    tempY = wtvar_tune_y;
+    tempY = wtvar_tune_y2;
 
     pageid = 0;
     ShowPage();
@@ -67,9 +63,9 @@ void DGUS_Screen_Nozzle_Y::KeyProcess()
                 else
                 {
                     wtvar_tune_x2 = tempX;
-                    wtvar_tune_y = tempY;
+                    wtvar_tune_y2 = tempY;
                     hotend_offset[1].x = T1_OFFSET_X + (wtvar_tune_x1 - 3) + ((float)wtvar_tune_x2 - 5) / 10;
-                    hotend_offset[1].y = ((float)wtvar_tune_y - 5) / 10;
+                    hotend_offset[1].y = (wtvar_tune_y1 - 3) + ((float)wtvar_tune_y2 - 5) / 10;
                     (void)settings.save();
                     Goback();
                 }
@@ -153,7 +149,7 @@ void DGUS_Screen_Nozzle_Y::ShowPage(void)
 
         dserial.SendString(ADDR_NOFFSET_NEXT_TEXT, MMSG_SAVE[wtvar_language], TEXTLEN_NOFFSET_BUTTON);
         dserial.SendLongString(ADDR_NOFFSET_TEXT, MMSG_NOZZLE_Y2_TEXT[wtvar_language], TEXTLEN_NOFFSET_TEXT);
-        ShowButtonOn(wtvar_tune_y);
+        ShowButtonOn(wtvar_tune_y2);
     }
 }
 

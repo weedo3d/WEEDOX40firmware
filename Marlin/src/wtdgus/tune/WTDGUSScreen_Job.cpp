@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "../../MarlinCore.h"
@@ -15,7 +11,7 @@
 #include "../WTHelpDoc.h"
 
 #ifdef DGUS_LCD
-// 设置菜单 
+
 void DGUS_Screen_Job::Init()
 {
 	dserial.LoadScreen(SCREEN_JOB);
@@ -24,6 +20,8 @@ void DGUS_Screen_Job::Init()
 	dserial.SendString(ADDR_JOB_TEXT_TITLE, MMSG_JOB_TITLE[wtvar_language], 30);
 	dserial.SendString(ADDR_JOB_TEXT_BUTTON1, MMSG_RETURN_HOME[wtvar_language], 20);
 	dserial.SendString(ADDR_JOB_TEXT_BUTTON2, MMSG_BACK[wtvar_language], 20);
+
+    queue.enqueue_one_P(PSTR("M120"));
 }
 
 void DGUS_Screen_Job::Update()
@@ -235,7 +233,7 @@ void DGUS_Screen_Job::KeyProcess()
 		else if (gltouchpara.address == ADDR_HELP1_KEY)
 		{
 			if (gltouchpara.value == KEY_HELP1_BUTTON_RETURN)
-			{	// 返回自检界面
+			{	
 				dserial.LoadScreen(SCREEN_JOB);
 			}
 		}

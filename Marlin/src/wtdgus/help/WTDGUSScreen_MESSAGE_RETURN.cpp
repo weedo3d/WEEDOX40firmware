@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "../../MarlinCore.h"
@@ -16,7 +12,7 @@
 #include "../WTDGUSManager.h"
 
 #ifdef DGUS_LCD
-// 提示信息菜单
+
 void DGUS_Screen_Message_Return::Init()
 {
 	dserial.LoadScreen(SCREEN_INFO);

@@ -46,9 +46,6 @@ typedef struct {
   // Machine state
   xyze_pos_t current_position;
 
-  // G29µ÷Æ½ºóZÖáÆ«ÒÆ perron
-  float zoffset;
-
   #if HAS_HOME_OFFSET
     xyz_pos_t home_offset;
   #endif
@@ -110,6 +107,9 @@ typedef struct {
 
   // Job elapsed time
   millis_t print_job_elapsed;
+
+  // dual mode
+  uint8_t dual_mode;
 
   uint8_t valid_foot;
 

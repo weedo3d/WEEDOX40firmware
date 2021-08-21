@@ -81,9 +81,13 @@ uint8_t wtvar_counter = 0;
 uint8_t wtvar_skipTest = 0;
 uint8_t wtvar_tune_x1 = 3;
 uint8_t wtvar_tune_x2 = 5;
-uint8_t wtvar_tune_y = 5;
+uint8_t wtvar_tune_y1 = 3;
+uint8_t wtvar_tune_y2 = 5;
 uint8_t wtvar_runout = 0;
+uint8_t wtvar_autoswith = 0;
 uint32_t nowtime;
+uint8_t wtvar_dual_mode = 0;        // 0 - normal mode, 1 - copy mode, 2 - mirror mode
+bool wtvar_changing_tool = false;
 bool readykill = false;
 int progressvalue;
 const char* killmsg = NULL;
@@ -436,7 +440,7 @@ constexpr bool did_pause_print = false;
  */
 bool printingIsActive()
 {
-    return !did_pause_print && (print_job_timer.isRunning() || IS_SD_PRINTING());
+    return !did_pause_print && (print_job_timer.isRunning() || IS_SD_PRINTING()) && (print_job_timer.duration() > 60);      // 21/7/10, perron, check runout after 60s
 }
 
 /**
@@ -489,7 +493,6 @@ inline void abortSDPrinting()
 #endif
 }
 
-// perron, loop run the case one by one
 inline void finishSDPrinting()
 {
 
@@ -507,7 +510,7 @@ inline void finishSDPrinting()
 
     case 3:
 #if ENABLED(LCD_SET_PROGRESS_MANUALLY)
-        // ui.set_progress_done();  // perron
+        // ui.set_progress_done();  
 #endif
         break;
 
@@ -520,6 +523,7 @@ inline void finishSDPrinting()
         break;
 
     case 5:
+    {
 #if ENABLED(POWER_LOSS_RECOVERY)
         recovery.purge();
 #endif
@@ -532,8 +536,11 @@ inline void finishSDPrinting()
         ui.reselect_last_file();
 #endif
 
+        // PORT_REDIRECT(SERIAL_BOTH);
         SERIAL_ECHOLNPGM(STR_FILE_PRINTED);
-
+        // PORT_RESTORE();
+        break;
+    }
     default:
         did_state = false;
         card.sdprinting_done_state = 0;
@@ -1232,8 +1239,7 @@ void setup()
 
     SETUP_LOG("setup() completed.");
 
-    // perron
-    strcpy_P(ipAddress, MSG_WIFINOTCONNECTED); // perron reset the ip address
+    strcpy_P(ipAddress, MSG_WIFINOTCONNECTED); 
     strcpy_P(esp32_name, MSG_UNKNOWN);
     strcpy_P(esp32_serial, MSG_UNKNOWN);
     strcpy_P(esp32_version, MSG_UNKNOWN);
@@ -1247,7 +1253,7 @@ void setup()
 
     // case fan init
     pinMode(CASE_FAN_PIN, OUTPUT);
-    digitalWrite(CASE_FAN_PIN, HIGH);
+    digitalWrite(CASE_FAN_PIN, LOW);
 
     if (wtvar_enablefilamentruncout == 0)
         runout.enabled = false;
@@ -1331,6 +1337,12 @@ void loop() {
     wt_loopaction();
 
     endstops.event_handler();
+
+    if (thermalManager.degHotend(0) > EXTRUDER_AUTO_FAN_TEMPERATURE)
+        wt_OpenAirFan();
+    else
+        wt_CloseAirFan();
+
 }
 
 uint32_t getcurrenttime()

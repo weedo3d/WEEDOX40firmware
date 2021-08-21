@@ -1466,7 +1466,7 @@ void Planner::check_axes_activity() {
         constexpr float fade_scaling_factor = 1.0;
       #endif
 
-      // perron 200814, 双喷头复制模式，对左右平台各取一次双线性校正，然后取最大值
+      // perron 200814
       #if ENABLED(DUAL_X_CARRIAGE)
         if (dxc_is_duplicating() && raw.x < (X_BED_SIZE / 2))
         {
@@ -1482,7 +1482,6 @@ void Planner::check_axes_activity() {
         }
 
       #else
-        // 非双喷头模式，只取一点双线性校正
         raw.z += (
             #if ENABLED(MESH_BED_LEVELING)
             mbl.get_z(raw

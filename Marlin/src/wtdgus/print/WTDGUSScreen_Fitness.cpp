@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "../../MarlinCore.h"
@@ -22,7 +18,7 @@
 extern bed_mesh_t z_values;
 
 #ifdef DGUS_LCD
-// 平面度错误警告菜单
+
 void DGUS_Screen_Fitness::Init()
 {
 	dserial.LoadScreen(SCREEN_LEVEL_DATA_TWO);

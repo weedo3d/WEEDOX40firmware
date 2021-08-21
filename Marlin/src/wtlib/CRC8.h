@@ -1,12 +1,13 @@
+/**
+* Copyright (C) 2021 Wiibooxtech Perron
+*/
+
 #ifndef __CRC8_H
 #define __CRC8_H
 
 #include "../MarlinCore.h"
 #include <stdio.h>
 
-/// <summary> 
-/// CRC8位校验表
-/// </summary> 
 const uint8_t CRC8Table[256] PROGMEM = {
 0,94,188,226,97,63,221,131,194,156,126,32,163,253,31,65, 
 157,195,33,127,252,162,64,30, 95,1,227,189,62,96,130,220,

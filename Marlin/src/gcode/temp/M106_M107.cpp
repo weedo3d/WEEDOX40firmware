@@ -64,9 +64,8 @@ void GcodeSuite::M106() {
 
     thermalManager.set_fan_speed(p, s);
 
-    // perron add, 200806, 修正在复制和镜像模式右喷头风扇不转的问题
-    #if ENABLED(DUAL_X_CARRIAGE) && (dual_x_carriage_mode == DXC_DUPLICATION_MODE || dual_x_carriage_mode == DXC_MIRRORED_MODE)
-        if (p == 0)
+    #if ENABLED(DUAL_X_CARRIAGE) 
+        if (p == 0 && dual_x_carriage_mode > DXC_AUTO_PARK_MODE)     // perron, 210714, fix the bug of right fan start in auto park mode
             thermalManager.set_fan_speed(1, s);
     #endif
   }

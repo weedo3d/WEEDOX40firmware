@@ -139,7 +139,7 @@ extern const char NUL_STR[], M112_KILL_STR[], G28_STR[], M21_STR[], M23_STR[], M
                   SP_P_STR[], SP_T_STR[], SP_X_STR[], SP_Y_STR[], SP_Z_STR[], SP_E_STR[],
                   X_LBL[], Y_LBL[], Z_LBL[], E_LBL[], SP_X_LBL[], SP_Y_LBL[], SP_Z_LBL[], SP_E_LBL[];
 
-                  // perron add define
+// perron add define
 #define LANGUAGE_EN		0
 #define LANGUAGE_CN		1
 #define LANGUAGE_FR		2
@@ -166,10 +166,14 @@ extern bool wtvar_uart0_binmode;
 extern uint8_t wt_onlineprinting;
 extern uint8_t wtvar_tune_x1;
 extern uint8_t wtvar_tune_x2;
-extern uint8_t wtvar_tune_y;
+extern uint8_t wtvar_tune_y1;
+extern uint8_t wtvar_tune_y2;
 extern uint8_t wtvar_runout;
 extern uint8_t wtvar_wifi_type;
+extern uint8_t wtvar_dual_mode;
+extern uint8_t wtvar_autoswith;
 extern bool readykill;
+extern bool wtvar_changing_tool;
 
 #ifdef DGUS_LCD
 

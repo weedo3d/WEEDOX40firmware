@@ -487,7 +487,7 @@ G29_TYPE GcodeSuite::G29()
   if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM("<<< G29");
 
 #if ENABLED(DUAL_X_CARRIAGE)
-  // add by perron, 200813, 修正复制模式下G29指令引发两喷头碰撞问题
+  // add by perron, 200813
   if (dxc_is_duplicating())
   {
       extruder_duplication_enabled = false;
@@ -498,8 +498,6 @@ G29_TYPE GcodeSuite::G29()
 
       endstops.not_homing();
       
-      // 添加调平网格数据检查功能
-      // 当左中右三点最大差值大于0.5mm时，弹出警告界面
       if (card.flag.sdprinting)
       {
         bool fitness_error = false;    

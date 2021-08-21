@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2019 Wiibooxtech Perron
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 
@@ -32,7 +32,6 @@ typedef enum {
 	RC_PACKET_NOEND = 0x86
 } ResponseCode;
 
-/// 通讯数据包基础类
 class Packet
 {
 	protected:
@@ -57,20 +56,13 @@ class Packet
 		/// Return Packet error
 		char Get_Error(void);
 
-		/// <summary>
-		/// 返回数据包状态
-		/// </summary>
-		/// <returns>PacketStatusEnum.</returns>
 		PacketStatusEnum State(void) { return state; };
-		/// Set CmdBuffer
-		//void SetCmdBuffer(CmdBuffer *cmdBuffer);
 
 		char port;
 
 };
 
 
-/// 发送数据包
 class OutPacket : public Packet
 {
 public:
@@ -81,7 +73,6 @@ private:
 	uint8_t buffer[OUT_PACKET_PAYLOAD];
 };
 
-/// 接收数据包
 class InPacket : public Packet
 {
 	public:

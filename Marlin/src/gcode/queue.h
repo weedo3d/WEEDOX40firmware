@@ -51,6 +51,12 @@ public:
 
   static char command_buffer[BUFSIZE][MAX_CMD_SIZE];
 
+  // perron, priority buffer will be put into the command_buffer prior to the serial command or sdcard command
+
+  static char priority_buffer[BUFSIZE][MAX_CMD_SIZE];
+
+  static uint8_t priority_length, priority_index_r, priority_index_w;
+
   /*
    * The port that the command was received on
    */
@@ -87,6 +93,15 @@ public:
    * Enqueue from program memory and return only when commands are actually enqueued
    */
   static void enqueue_now_P(PGM_P const cmd);
+
+  // perron, enqueue one command to priority buffer
+  static bool priority_enqueue_one(const char* cmd);
+
+  // perron, enqueue one command from program memory to priority buffer
+  static bool priority_enqueue_one_P(PGM_P const pgcode);
+
+  // perron, process the priority command
+  static bool process_priority_command();
 
   /**
    * Check whether there are any commands yet to be executed

@@ -51,6 +51,10 @@
   #include "../../libs/L64XX/L64XX_Marlin.h"
 #endif
 
+#if HAS_FILAMENT_SENSOR
+#include "../../feature/runout.h"
+#endif
+
 #define DEBUG_OUT ENABLED(DEBUG_LEVELING_FEATURE)
 #include "../../core/debug_out.h"
 
@@ -487,7 +491,8 @@ void GcodeSuite::G28() {
 
   // Restore the active tool after homing
   #if HOTENDS > 1 && (DISABLED(DELTA) || ENABLED(DELTA_HOME_TO_SAFE_ZONE))
-    tool_change(old_tool_index, NONE(PARKING_EXTRUDER, DUAL_X_CARRIAGE));   // Do move if one of these
+    // tool_change(old_tool_index, NONE(PARKING_EXTRUDER, DUAL_X_CARRIAGE));   // Do move if one of these
+    tool_change(old_tool_index, true);   // Do move if one of these
   #endif
 
   #if HAS_HOMING_CURRENT

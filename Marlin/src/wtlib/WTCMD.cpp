@@ -1,113 +1,7 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
-/**
-* WEEDO 自用指令
-* 主板发往打印机的指令，以W开头，后跟三位数字
-* W1   联机打印开始
-* W2   联机打印结束
-* W3   联机打印中止
-* W4   联机打印暂停
-* W5   联机打印恢复
-* W6   SPARK已连接
-* W7   SPARK已断开
-* W106 显示正在下载界面
-* W107 关闭正在下载界面
-* W108 显示下载错误界面
-* W109 重启DGUS
-* W110 显示DGUS启动界面
-* W111 显示DGUS主界面
-* W112 显示DGUS SD界面
-* W113 显示DGUS准备界面
-* W114 显示DGUS设置界面
-* W116 显示DGUS料丝载入界面
-* W117 显示DGUS料丝卸载界面
-* W118 显示DGUS打印界面
-* W119 显示DGUS错误信息界面
-* W120 显示DGUS提示信息界面
-* W121 显示DGUS调平界面
-* W122 显示DGUS加热界面
-* W123 显示DGUS版本信息界面
-* W124 显示DGUS高级设置界面
-* W125 显示DGUS WIFI设置界面
-* W126 显示DGUS打印结束界面
-* W127 显示DGUS自动关机界面
-* W128 显示DGUS打印设置界面
-* W129 显示DGUS保存关机界面
-* W130 显示DGUS恢复打印界面
-* W131 显示DGUS恢复出厂设置界面
-* W132 显示带返回的信息显示界面 
-* W133 显示无返回的信息显示界面
-* W134 显示ZOFFSET界面
-* W135 显示工程测试界面
-* W136 显示开机自检界面
-* W201 查询打印机状态，返回 打印机状态, 正在打印的文件， 已打印时间， 打印的文件字节量
-* W202 打开现有文件并添加数据，暂时无效
-* W203 打印机立即重启
-* W204 返回ESP32的IP地址字符串，如未连接网络，则返回Disconnected
-* W205 返回ESP32的序列号字符串
-* W206 返回ESP32的固件版本字符串
-* W207 返回ESP32的设备名称字符串
-* W208 返回ESP32状态信息字符串
-* W209 取消打印
-* W210 连接工厂默认WIFI网
-* W211 打开喷头0风扇
-* W212 关闭喷头0风扇
-* W213 WEEDO云状态 
-* W214 打开空滤风扇
-* W215 关闭空滤风扇
-* W216 保存参数至SD卡gcode文件
-* W217 从SD卡gcode文件中读取参数并保存至主板内存
-* W218 已连接AP名
-* W219 AP信号强度
-* W220 接收jpg数据
-* W221 接收jpg数据开始
-* W222 接收jpg数据结束
-* W223 解析GCode信息
-* W224 断丝暂停
-* W225 更新SoftEndstop
-* W226 关闭喷头XY偏置粗调与精调参数
-* W227 关闭喷头XY偏置精调参数
-* W228 恢复喷头XY偏置粗调与精调参数
-* W230 接收文件数据
-* W231 接收文件开始
-* W232 接收文件结束
-* W299 关闭电源
-* W300 设置WIFI网ssid
-* W301 设置WIFI网pwd
-* W302 连接WIFI网络
-* W303 返回NDisk文件页数
-* W304 NDisk列表开始
-* W305 NDisk文件名
-* W306 NDisk文件列表结束
-* W307 NDisk文件机型名
-* W308 NDisk文件层高
-* W309 NDisk文件填充率
-* W310 NDisk文件材料
-* W311 NDisk文件料丝用量
-* W312 NDisk文件温度
-* W313 NDisk文件打印时间
-* W314 NDisk文件信息结束
-* W315 NDisk列表有更新
-* W316 正在打印文件名
-* W317 NDisk MinX
-* W318 NDisk MaxX
-* W999 WIFICAM启动
-*
-*
-* 打印机发往主板的指令，以WTCMD:开头，后跟大写英文单词
-* WTCMD:CONFIG		ESP32进入smart config模式
-* WTCMD:IP			读取ESP32的IP地址
-* WTCMD:RESTART		ESP32立即重启
-* WTCMD:VERSION		读取ESP32的硬件和固件版本
-* WTCMD:OTADEFAULT	从默认网址OTA升级
-* WTCMD:OTAURI		从指定网址OTA升级
-* WTCMD:OTAFORCE	从指定网络OTA至指定版本
-* WTCMD:WIFIDEFAULT	连接工厂默认WIFI网
-* WTCMD:JOIN		连接到指定的WIFI网
-*
-*/
 
 #include "WTCMD.h"
 #include "../gcode/parser.h"
@@ -155,7 +49,6 @@ WT_STATUS wt_machineStatus = WS_IDLE;
 WT_MAIN_ACTION wt_mainloop_action = WT_MAIN_ACTION::WMA_IDLE;
 
 uint8_t wt_onlineprinting = SPARK_LOST;		// 0 = not printing, 1 = paused, 2 = printing, 3 = lost
-//extern Buzzer buzzer;
 
 #ifdef WIFISUPPORT
 char ipAddress[16];
@@ -198,7 +91,6 @@ static void ParseStringArg(char* buffer, uint8_t bufferlen)
 	}
 }
 
-// ESP32进入smart config模式
 void WT_Set_SmartConfig()
 {
 	#ifdef WIFISUPPORT
@@ -209,7 +101,6 @@ void WT_Set_SmartConfig()
 	#endif
 }
 
-// 读取ESP32的IP地址
 void WT_Get_IP()
 {
 	#ifdef WIFISUPPORT
@@ -222,7 +113,6 @@ void WT_Get_IP()
 	#endif
 }
 
-// ESP32立即重启
 void WT_ESP32_Restart()
 {
 	#ifdef WIFISUPPORT
@@ -232,7 +122,6 @@ void WT_ESP32_Restart()
 	#endif
 }
 
-// 读取ESP32的硬件和固件版本
 void WT_Get_ESP32Version()
 {
 	#ifdef WIFISUPPORT
@@ -242,7 +131,6 @@ void WT_Get_ESP32Version()
 	#endif
 }
 
-// 从默认网址OTA升级
 void WT_OTA_Default()
 {
 	#ifdef WIFISUPPORT
@@ -252,7 +140,6 @@ void WT_OTA_Default()
 	#endif
 }
 
-// 从指定网址OTA升级
 void WT_OTA_URI(const char * uri)
 {
 	#ifdef WIFISUPPORT
@@ -262,7 +149,6 @@ void WT_OTA_URI(const char * uri)
 	#endif
 }
 
-// 从指定网络OTA至指定版本
 void WT_OTA_Force(const char * uri, const char * ver)
 {
 	#ifdef WIFISUPPORT
@@ -275,7 +161,6 @@ void WT_OTA_Force(const char * uri, const char * ver)
 	#endif
 }
 
-// 连接工厂默认WIFI网
 void WT_WIFI_Default()
 {
 	#ifdef WIFISUPPORT
@@ -285,7 +170,6 @@ void WT_WIFI_Default()
 	#endif
 }
 
-// 连接到指定的WIFI网
 void WT_WIFI_Join()
 {
 	#ifdef WIFISUPPORT
@@ -298,7 +182,6 @@ void WT_WIFI_Join()
 	#endif
 }
 
-// WEEDO云连接状态
 void WT_TB_STATE()
 {
 	PORT_REDIRECT(1);
@@ -307,7 +190,6 @@ void WT_TB_STATE()
 	PORT_RESTORE();
 }
 
-// 获取已连接AP名
 void WT_AP_NAME()
 {
 	PORT_REDIRECT(1);
@@ -384,16 +266,12 @@ void wt_CloseExtruder0Fan()
 
 void wt_OpenAirFan()
 {
-#if MB(WEEDO_61B)
-	digitalWrite(AIR_FAN_PIN, HIGH);
-#endif
+	digitalWrite(CASE_FAN_PIN, HIGH);
 }
 
 void wt_CloseAirFan()
 {
-#if MB(WEEDO_61B)
-	digitalWrite(AIR_FAN_PIN, LOW);
-#endif
+	digitalWrite(CASE_FAN_PIN, LOW);
 }
 void wt_PowerOff()
 {
@@ -541,7 +419,6 @@ void wt_spark_resume()
 	#endif
 }
 
-// 向Spark发送暂停打印请求
 void wt_online_pause()
 {
 	PORT_REDIRECT(1);
@@ -553,7 +430,6 @@ void wt_online_pause()
 	#endif
 }
 
-// 向Spark发送恢复打印请求
 void wt_online_resume()
 {
 	PORT_REDIRECT(1);
@@ -561,7 +437,6 @@ void wt_online_resume()
 	PORT_RESTORE();
 }
 
-// 向Spark发送取消打印请求
 void wt_online_cancel()
 {
 	PORT_REDIRECT(1);
@@ -573,7 +448,6 @@ void wt_online_cancel()
 	#endif
 }
 
-// 保存主板参数至SD卡gcode文件
 void wt_save_config()
 {
 	if (!card.openNewFileWrite((char*)SD_CONFIG_FILE))
@@ -663,7 +537,6 @@ END:
 	card.closefile();
 }
 
-// 从SD卡gcode文件中读取参数并保存至主板内存
 void wt_load_config()
 {
 	if (!card.openSavFileRead((char*)SD_CONFIG_FILE))
@@ -689,11 +562,10 @@ void wt_load_config()
 		card_eof = card.eof();
 
 		if (card_eof || n == -1 || sd_char == '\r')
-		{	// 一行读取结束
+		{	
 
 			buffer[sd_count] = '\0';
 
-			// 读取gcode指令
 			if (!sd_comment_mode)
 			{
 				queue.enqueue_one_now(buffer);
@@ -706,11 +578,11 @@ void wt_load_config()
 			sd_comment_mode = false;
 		}
 		else if (sd_count >= sizeof(buffer) - 1) 
-		{	// 行超长
+		{	
 
 		}
 		else 
-		{	// 读取字符 
+		{	
 			if (sd_char == ';')
 				sd_comment_mode = true;
 			else if (sd_char != '\n')
@@ -754,7 +626,6 @@ void ParseFileInfo()
     }
     else
     {
-        // 短文件名转为unicode字符串
         _len = strlen(card.filename) * 2;
         Utf8ToUnicode(card.filename, tempbuffer);
     }
@@ -778,41 +649,39 @@ void WTCMD_Process()
 {
 	switch (parser.codenum)
 	{
-	case 1:		// 联机打印开始
+	case 1:		
 		wt_spark_begin();
 		break;
 
-	case 2:		// 联机打印结束
+	case 2:		
 		wt_spark_end();
 		break;
 
-	case 3:		// 联机打印中止
+	case 3:		
 		wt_spark_cancel();
 		break;
 
-	case 4:		// 联机打印暂停
+	case 4:		
 		wt_spark_pause();
 		break;
 
-	case 5:		// 联机打印恢复
+	case 5:		
 		wt_spark_resume();
 		break;
 
-	case 6:		// SPARK已连接
-		//lcd_setstatusPGM(MMSG_OCTOPRINT_OPEN, -1);
+	case 6:		
 		wt_onlineprinting = SPARK_IDLE;
 		#ifdef DGUS_LCD
 		dgus.NDisk_Clear();
 		#endif
 		break;
 
-	case 7:		// SPARK已断开
-		//lcd_setstatusPGM(MMSG_OCTOPRINT_CLOSE, -1);
+	case 7:	
 		wt_onlineprinting = SPARK_LOST;
 		break;
 
 	#ifdef DGUS_LCD
-	case 106:		// 显示正在下载界面
+	case 106:		
 		#ifdef SDSUPPORT
 		memset(uploadFilename, 0, FILENAME_LENGTH);
 		if (strlen(parser.string_arg) <= FILENAME_LENGTH)
@@ -824,146 +693,146 @@ void WTCMD_Process()
 		
 		break;
 
-	case 107:		// 关闭正在下载界面
+	case 107:	
 		dgus.GotoMain();
         wt_machineStatus = WS_IDLE;
 		break;
 
-	case 108:		// 显示下载错误界面
+	case 108:	
 		dgus.ShowUploadFailMenu();
         wt_machineStatus = WS_UPLOADING;
 		break;
 
-	case 109:		// 重启DGUS
+	case 109:		
 		dgus.ResetScreen();
 		break;
 
-	case 110:		// 显示DGUS启动界面
+	case 110:		
 		dgus.GotoBootMenu();
 		break;
 
-	case 111:		// 显示DGUS主界面
+	case 111:	
 		dgus.GotoMain();
 		break;
 
-	case 112:		// 显示DGUS SD界面
+	case 112:		
 		dgus.GotoSDMenu();
 		break;
 
-	case 113:		// 显示DGUS准备界面
+	case 113:	
 		dgus.GotoPrepareMenu();
 		break;
 
-	case 114:  // 显示DGUS设置界面
+	case 114: 
 		dgus.GotoControlMenu();
 		break;
 
-	case 116:  // 显示DGUS料丝载入界面
+	case 116:  
 		dgus.GotoLoadFilament(NULL);
 		break;
 
-	case 117:  // 显示DGUS料丝卸载界面
+	case 117: 
 		dgus.GotoUnloadFilament(NULL);
 		break;
 
-	case 118:  // 显示DGUS打印界面
+	case 118:  
 		dgus.GotoPrintingMenu();
 		break;
 
-	case 119:  // 显示DGUS错误信息界面
+	case 119: 
 		dgus.GotoErrorMenu();
 		break;
 
-	case 120:  // 显示DGUS提示信息界面
+	case 120:  
 		//dgus.GotoMessageMenu();
 		break;
 
-	case 121:  // 显示DGUS调平界面
+	case 121: 
 		dgus.GotoLevelMenu();
 		break;
 
-	case 122:  // 显示DGUS加热界面
+	case 122:  
 		dgus.GotoPreheatMenu();
 		break;
 
-	case 123:  // 显示DGUS版本信息界面
+	case 123:  
 		dgus.GotoMachineInfoMenu();
 		break;
 
-	case 124:  // 显示DGUS高级设置界面
+	case 124:  
 		//dgus.GotoAdvanceSettingMenu();
 		break;
 
-	case 125:  // 显示DGUS WIFI设置界面
+	case 125:  
 		dgus.GotoWifiSettingMenu();
 		break;
 
-	case 126:  // 显示DGUS打印结束界面
+	case 126: 
 		dgus.GotoPrintEndMenu();
 		break;
 
-	case 127:  // 显示DGUS自动关机界面
+	case 127:  
 		dgus.GotoPowerOffMenu();
 		break;
 
-	case 128:  // 显示DGUS打印设置界面
+	case 128:  
 		dgus.GotoPrintingSettingMenu();
 		break;
 
-	case 129:  // 显示DGUS保存关机界面
+	case 129:  
 		dgus.GotoSavePrintingMenu();
 		break;
 
-	case 130:  // 显示DGUS恢复打印界面
+	case 130: 
 		dgus.GotoResumePrintingMenu();
 		break;
 
-	case 131:  // 显示DGUS恢复出厂设置界面
+	case 131:  
 		dgus.GotoRestoreSettingMenu();
 		break;
 
-	case 132:	// 显示带返回的信息显示界面
+	case 132:	
 		//dgus.GotoMessageReturnMenu();
 		break;
 
-	case 133:	// 显示无返回的信息显示界面
+	case 133:	
 		dgus.GotoMessageNoReturnMenu();
 		break;
 
-	case 134:	// 显示ZOFFSET界面
+	case 134:	
 		dgus.GotoZOffsetMenu();
 		break;
 
-	case 135:	// 显示工程测试界面
+	case 135:	
 		dgus.GotoTestModeMenu();
 		break;
 
-	case 136:	// 显示开机自检界面
+	case 136:	
 		dgus.GotoSelfTest();
 		break;
 
 	#endif
 
-	case 201:	// 查询打印机状态，返回 打印机状态, 正在打印的文件， 已打印时间， 打印的文件字节量
+	case 201:	
 		GetMachineStatus();
 		break;
 
-	case 202:	// 打开现有文件并添加数据，暂时无效
+	case 202:	
 		// card.appendFile(parser.string_arg);
 		break;
 
-	case 203:	// 打印机立即重启
+	case 203:	
 		wt_restart();
 		while (1);
 		break;
 
-	case 204:	// 返回ESP32的IP地址字符串，如未连接网络，则返回Disconnected
+	case 204:	
 		#ifdef WIFISUPPORT
 		ParseIPAddress();
 		#endif
 		break;
 
-	case 205:	// 返回ESP32的序列号字符串
+	case 205:	
 		#ifdef WIFISUPPORT
 		ZERO(esp32_serial);
 		if (strlen(parser.string_arg) <= 15)
@@ -973,7 +842,7 @@ void WTCMD_Process()
 		#endif
 		break;
 
-	case 206:	// 返回ESP32的固件版本字符串
+	case 206:	
 		#ifdef WIFISUPPORT
 		memset(esp32_version, 0, 8);
 		if (strlen(parser.string_arg) <= 8)
@@ -983,142 +852,149 @@ void WTCMD_Process()
 		#endif
 		break;
 
-	case 207:	// 返回ESP32的设备名称字符串
+	case 207:	
 		#ifdef WIFISUPPORT
 		ZERO(esp32_name);
         ParseStringArg(esp32_name, 12);
 		#endif
 		break;
 
-	case 208:	// 返回ESP32状态信息字符串
+	case 208:	
 		#ifdef WIFISUPPORT
 		ZERO(esp32_message);
         ParseStringArg(esp32_message, 22);
 		#endif
 		break;
 
-	case 209:		// 取消打印
+	case 209:	
 		wt_sdcard_stop();
 		while (1);
 		break;
 
-	case 210:		// 连接工厂默认wifi网
+	case 210:		
 		WT_WIFI_Default();
 		break;
 
-	case 211:		// W211 打开喷头0风扇
+	case 211:		
 		wt_OpenExtruder0Fan();
 		break;
 
-	case 212:		// W212 关闭喷头0风扇
+	case 212:		
 		wt_CloseExtruder0Fan();
 		break;
 
-	case 213:	// WEEDO云状态 
+	case 213:	
 		ParseTBState();
 		break;
 
-	case 214:		// 打开空滤风扇
+	case 214:	
 		wt_OpenAirFan();
 		break;
 
-	case 215:		// 关闭空滤风扇
+	case 215:		
 		wt_CloseAirFan();
 		break;
 
-	case 216:		// 保存主板参数至SD卡gcode文件
+	case 216:		
 		wt_save_config();
 		break;
 
-	case 217:		// 从SD卡gcode文件中读取参数并保存至主板内存
+	case 217:	
 		wt_load_config();
 		break;
 
-	case 218:		// 已连接AP名
+	case 218:		
 		ParseAPName();
 		break;
 
-	case 219:		// AP信号强度
+	case 219:		
 		ParseWifiSignal();
 		break;
 
-	case 220:		// 接收jpg数据
+	case 220:	
 		gcodeinfo.send_jpg_line(parser.string_arg);
 		break;
 
-	case 221:		// 接收jpg数据开始
+	case 221:	
 		#ifdef DGUS_LCD
 		dserial.JPG_Reset();
 		dgus.EnablePreviewAction(false);
 		#endif
 		break;
 
-	case 222:		// 接收jpg数据结束
+	case 222:	
 		#ifdef DGUS_LCD
 		dserial.JPG_Show();
 		dgus.EnablePreviewAction(true);
 		#endif
 		break;
 
-	case 223:		// 解析GCode信息
+	case 223:		
 		ParseFileInfo();
 		break;
 
-	case 224:		// 断丝暂停
+	case 224:	
 	{
-		if (wt_onlineprinting == SPARK_IDLE || wt_onlineprinting == SPARK_LOST)
-			wt_sdcard_pause(false);
+		if (wtvar_autoswith)
+		{
+			wt_changetool();
+		}
 		else
-			wt_online_pause();
-		#ifdef DGUS_LCD
-		dgus.ShowRunoutMessage();
-		#endif
-        planner.synchronize();
-		PORT_REDIRECT(1);
-		SERIAL_ECHOLNPGM("//action:" ACTION_ON_RUNOUT);
-		PORT_RESTORE();
-        wtvar_runout = 1;
+		{
+			if (wt_onlineprinting == SPARK_IDLE || wt_onlineprinting == SPARK_LOST)
+				wt_sdcard_pause(false);
+			else
+				wt_online_pause();
+			#ifdef DGUS_LCD
+			dgus.ShowRunoutMessage();
+			#endif
+			planner.synchronize();
+			PORT_REDIRECT(1);
+			SERIAL_ECHOLNPGM("//action:" ACTION_ON_RUNOUT);
+			PORT_RESTORE();
+			wtvar_runout = 1;
+		}
 		break;
 	}
 
-    case 225:       // 更新SoftEndstop
+    case 225:      
         update_software_endstops(X_AXIS);
         break;
 
-    case 226:       // 关闭喷头XY偏置粗调与精调参数
+    case 226:      
         hotend_offset[1].x = T1_OFFSET_X;
         hotend_offset[1].y = 0;
         break;
 
-    case 227:       // 关闭喷头XY偏置精调参数
+    case 227:       
         hotend_offset[1].x = T1_OFFSET_X + (wtvar_tune_x1 - 3);
-        hotend_offset[1].y = 0;
+        hotend_offset[1].y = wtvar_tune_y1 - 3;;
         break;
 
-    case 228:       // 恢复喷头XY偏置粗调与精调参数
+    case 228:      
         hotend_offset[1].x = T1_OFFSET_X + (wtvar_tune_x1 - 3) + ((float)wtvar_tune_x2 - 5) / 10;
-        hotend_offset[1].y = ((float)wtvar_tune_y - 5) / 10;
+        hotend_offset[1].y = (wtvar_tune_y1 - 3) + ((float)wtvar_tune_y2 - 5) / 10;
         break;
 
-    case 299:       // 关闭电源
+    case 299:      
         wt_PowerOff();
         break;
 		
-	case 300:		// 设置WIFI网ssid
+	case 300:		
 		ZERO(wifi_ssid);
 		strcpy(wifi_ssid, parser.string_arg);
 		break;
 
-	case 301:		// 设置WIFI网pwd
+	case 301:		
 		ZERO(wifi_pwd);
 		strcpy(wifi_pwd, parser.string_arg);
 		break;
 
-	case 302:			// 连接WIFI网络
+	case 302:			
 		WT_WIFI_Join();
 		break;
 	#ifdef DGUS_LCD
-	case 303:			// 返回NDisk文件页数
+	case 303:			
 		if (parser.seen('P'))
 		{
 			dgus.ndisk_pagecount = parser.value_int();
@@ -1126,56 +1002,56 @@ void WTCMD_Process()
 		}
 		break;
 
-	case 304:			// NDisk列表开始
+	case 304:			
 		dgus.NDisk_Clear();
 		break;
 
-	case 305:			// NDisk文件名
+	case 305:			
 		parse_ndisk_file_info();
 		break;
 
-	case 306:			// NDisk文件列表结束
+	case 306:		
 		dgus.NDisk_Show();
 		break;
 
-	case 307:			// NDisk文件机型名
+	case 307:		
 		ParseStringArg(gcodeinfo.info.machine, 20);
 		break;
 
-	case 308:			//NDisk文件层高
+	case 308:			
 		ParseStringArg(gcodeinfo.info.layerheight, 10);
 		break;
 
-	case 309:			// NDisk文件填充率
+	case 309:			
 		ParseStringArg(gcodeinfo.info.density, 10);
 		break;
 
-	case 310:			// NDisk文件材料
+	case 310:			
 		ParseStringArg(gcodeinfo.info.material, 10);
 		break;
 
-	case 311:			// NDisk文件料丝用量
+	case 311:			
 		ParseStringArg(gcodeinfo.info.filament, 10);
 		break;
 
-	case 312:			// NDisk文件温度
+	case 312:			
 		ParseStringArg(gcodeinfo.info.temp0, 10);
 		break;
 
-	case 313:			// NDisk文件打印时间
+	case 313:		
 		ParseStringArg(gcodeinfo.info.totaltime, 10);
 		break;
 
-	case 314:			// W314 NDisk文件信息结束
+	case 314:		
 		dgus.GotoPreviewMenu(PREVIEW_PARENT_WIFI);
 		break;
 
-	case 315:			// NDisk列表有更新
+	case 315:		
 		dgus.ndisk_pageload = false;
 		dgus.ndisk_pagecount = 0;
 		break;
 
-	case 316:			// 正在打印文件名
+	case 316:		
     {
 		char filename_buffer[UNICODE_FILENAME_LENGTH];
 		ZERO(filename_buffer);
@@ -1185,16 +1061,16 @@ void WTCMD_Process()
 		break;
     }
 
-    case 317:           // NDisk MinX
+    case 317:           
         gcodeinfo.info.x_min = atol(parser.string_arg);
         break;
 
-    case 318:           // NDisk MaxX
+    case 318:         
         gcodeinfo.info.x_max = atol(parser.string_arg);
         break;
 	#endif
 
-    case 999:           // WIFICAM 启动
+    case 999:         
         wt_wifi_boot();
         break;
 
@@ -1222,7 +1098,6 @@ void wt_echo_buffer_count()
 	PORT_RESTORE();
 }
 
-// 将WIFI通讯数据发送至串口1
 void wifi_debug(const char* message, bool incoming)
 {
 	if (startsWith(message, "W220")) return;
@@ -1234,7 +1109,6 @@ void wifi_debug(const char* message, bool incoming)
 }
 
 // request ndisk page count
-// WTCMD:COUNT		读取网络文件页数
 void wt_ndisk_read_page_count(void)
 {
 	PORT_REDIRECT(1);
@@ -1243,7 +1117,6 @@ void wt_ndisk_read_page_count(void)
 }
 
 // read ndisk file page
-// WTCMD:PAGEID		读取网络文件页数
 void wt_ndisk_read_page()
 {
 	if (dgus.ndisk_pagecount > 0)
@@ -1260,7 +1133,6 @@ void wt_ndisk_read_page()
 }
 
 // read ndisk file info
-// WTCMD:FILE		读取网络文件信息
 void wt_ndisk_read_fileinfo(void)
 {
 	PORT_REDIRECT(1);
@@ -1269,7 +1141,6 @@ void wt_ndisk_read_fileinfo(void)
 }
 
 // print ndisk selected file
-// WTCMD:PRINT		打印网络文件
 void wt_ndisk_print(void)
 {
 	PORT_REDIRECT(1);
@@ -1298,10 +1169,8 @@ void host_action_finish()
 
 static void wt_pause_print()
 {
-	// 保存当前位置
   	resume_position = current_position;
 
-    // 保存当前目标温度
     resume_nozzle0 = thermalManager.degTargetHotend(0);
 
     #if HOTENDS > 1
@@ -1312,10 +1181,8 @@ static void wt_pause_print()
     resume_bed = thermalManager.degTargetBed();
     #endif
 
-    // 保存速度
     resume_feedrate = feedrate_mm_s;
 
-	// 等待完成当前操作
   	planner.synchronize();
 
     #if ENABLED(DUAL_X_CARRIAGE)
@@ -1324,21 +1191,30 @@ static void wt_pause_print()
     extruder_duplication_enabled = false;
     #endif
 
-	// 料丝回抽
     if (wtvar_runout == 0)
     {
         current_position.e += -PAUSE_PARK_RETRACT_LENGTH / planner.e_factor[active_extruder];
     }
     else
-    {   // runout事件
+    {   
         current_position.e += -40 / planner.e_factor[active_extruder];
     }
     line_to_current_position(PAUSE_PARK_RETRACT_FEEDRATE);
 	planner.synchronize();
 
-	// 移动喷头至等待位置
-    endstops.enable(true); 
-    homeaxis(X_AXIS);
+    endstops.enable(true);
+	if (wtvar_dual_mode == 0)
+	{
+		homeaxis(X_AXIS);
+	}
+	else
+	{
+		active_extruder = 1;
+        homeaxis(X_AXIS);
+		active_extruder = 0;
+        homeaxis(X_AXIS);
+	}
+    
 
     #if ENABLED(DUAL_X_CARRIAGE)
     active_extruder = saved_ext;
@@ -1354,11 +1230,32 @@ static void wt_pause_print()
 
 static void wt_resume_print()
 {
-	// 移动喷头至等待位置
-    endstops.enable(true); 
-    homeaxis(X_AXIS);
+	#if ENABLED(DUAL_X_CARRIAGE)
+    const int8_t saved_ext        = active_extruder;
+    const bool saved_ext_dup_mode = extruder_duplication_enabled;
+    extruder_duplication_enabled = false;
+    #endif
+
+    endstops.enable(true);
+	if (wtvar_dual_mode == 0)
+	{
+		homeaxis(X_AXIS);
+	}
+	else
+	{
+		active_extruder = 1;
+        homeaxis(X_AXIS);
+		active_extruder = 0;
+        homeaxis(X_AXIS);
+	}
+    
+
+    #if ENABLED(DUAL_X_CARRIAGE)
+    active_extruder = saved_ext;
+    extruder_duplication_enabled = saved_ext_dup_mode;
+    stepper.set_directions();
+    #endif
 	
-    // 恢复温度
     thermalManager.setTargetHotend(resume_nozzle0, 0);
 	
     #if HOTENDS > 1
@@ -1376,12 +1273,27 @@ static void wt_resume_print()
 		thermalManager.reset_hotend_idle_timer(e);
 	}
 
-	// 载入料丝
 	if (nozzle_timed_out || thermalManager.hotEnoughToExtrude(active_extruder)) 
 		load_filament(0, 0, ADVANCED_PAUSE_PURGE_LENGTH, 0, false, false);
 
 	// If resume_position is negative
 	if (resume_position.e < 0) do_pause_e_move(resume_position.e, feedRate_t(PAUSE_PARK_RETRACT_FEEDRATE));
+
+	if (wtvar_dual_mode == 1)
+	{
+		extruder_duplication_enabled = false;
+		queue.enqueue_now_P("M605 S2");
+		queue.enqueue_now_P("G28 X R0");
+	}
+	else if (wtvar_dual_mode == 2)
+	{
+		extruder_duplication_enabled = false;
+		queue.enqueue_now_P("M605 S2");
+		queue.enqueue_now_P("M605 S3");
+		queue.enqueue_now_P("G28 X R0");
+	}
+
+  	planner.synchronize();
 
 	// Move XY to starting position, then Z
 	do_blocking_move_to_xy(resume_position, feedRate_t(NOZZLE_PARK_XY_FEEDRATE));
@@ -1392,7 +1304,6 @@ static void wt_resume_print()
 	// Set extruder to saved position
   	planner.set_e_position_mm((destination.e = current_position.e = resume_position.e));
 
-    // 恢复速度
     feedrate_mm_s = resume_feedrate;
 
 	#if HAS_FILAMENT_SENSOR
@@ -1423,4 +1334,50 @@ void wt_loopaction(void)
 	}
 
 	
+}
+
+void move_center(void)
+{
+    float _center = (gcodeinfo.info.x_max + gcodeinfo.info.x_min) / 2;
+    float _diff = _center - X_BED_SIZE / 4;
+
+    LIMIT(_diff, - X_BED_SIZE * 0.75, X_BED_SIZE * 0.75);
+
+    char* buffer = (char*)malloc(30);
+    memset(buffer, 0, 30);
+	sprintf(buffer, "M206 X%.2f", _diff);
+    queue.enqueue_now_P(buffer);
+    free(buffer);
+}
+
+void wt_changetool(void)
+{
+	if (wtvar_dual_mode == 0)
+	{
+		wtvar_changing_tool = true;		
+		char* buffer = (char*)malloc(30);
+    	memset(buffer, 0, 30);
+		if (active_extruder == 0)
+		{
+			if (thermalManager.degHotend(1) < thermalManager.degHotend(0) -3)
+			{	// back to home position and heating the nozzle
+				queue.priority_enqueue_one_P(PSTR("G28 X R0 F2000"));
+				sprintf(buffer, "M109 T1 S%.2f", thermalManager.degHotend(0));
+				queue.priority_enqueue_one(buffer);
+			}
+			queue.priority_enqueue_one_P(PSTR("T1"));
+		}
+		else
+		{
+			
+
+			if (thermalManager.degHotend(0) < thermalManager.degHotend(1) -3)
+			{	// back to home position and heating the nozzle
+				queue.priority_enqueue_one_P(PSTR("G28 X R0 F2000"));
+				sprintf(buffer, "M109 T0 S%.2f", thermalManager.degHotend(1));
+			}
+    		queue.priority_enqueue_one(buffer);
+			queue.priority_enqueue_one_P(PSTR("T0"));
+		}
+	}
 }

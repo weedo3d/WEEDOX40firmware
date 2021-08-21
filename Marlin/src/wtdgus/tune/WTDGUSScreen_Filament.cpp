@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "../../MarlinCore.h"
@@ -21,10 +17,9 @@
 #define ACTIVE_RIGHT    1
 
 #ifdef DGUS_LCD
-// 进丝菜单 
+
 void DGUS_Screen_Filament::Init()
 {
-	// 显示料丝类型选择界面
 	dserial.LoadScreen(SCREEN_LANGUAGE_SETTING);
 	dserial.SendString(ADDR_LANG_TITLE, MMSG_FILAMENT_TYPE_TITLE[wtvar_language], 30);
 	dserial.SendString(ADDR_LANG_BACK_TEXT, MMSG_BACK[wtvar_language], 20);
@@ -54,7 +49,6 @@ void DGUS_Screen_Filament::Update()
 		break;
 
 	case FSSE_HEATTING:
-		// 载入加热界面
 		dserial.LoadScreen(SCREEN_FILAMENT_OPERATION);
 		if (operation == FILAMENT_OPERATION_LOAD)
 		{
@@ -116,7 +110,6 @@ void DGUS_Screen_Filament::Update()
 		filaopsts = FSSE_WAITTING;
 		ShowProcess();
 
-		// 喷头归位
 		queue.enqueue_now_P("G28 X R0");
 		break;
 
@@ -197,14 +190,13 @@ void DGUS_Screen_Filament::Update()
 
 	case FSSE_COMPLETE:
 		filaopsts = FSSE_CHOICETYPE;
-        if (wt_machineStatus != WS_PAUSE)   // 打印中换丝后不关闭喷头温度
+        if (wt_machineStatus != WS_PAUSE)   
 		    queue.enqueue_now_P("M104 S0");
         queue.enqueue_now_P("M18");
 		Goback();
 		break;
 
 	case FSSE_CHOICE_EXTRUDER:
-		// 载入喷头选择界面
 		dserial.LoadScreen(SCREEN_2OPTION);
 
 		dserial.SendString(ADDR_2OPTION_TEXT_TITLE, MMSG_FILAMENT_CHOICE_EXTRUDER_TITLE[wtvar_language], 30);
@@ -235,7 +227,7 @@ void DGUS_Screen_Filament::KeyProcess()
 	if (gltouchpara.validflg)
 	{
 		if (gltouchpara.address == ADDR_LANG_KEY)
-		{	// 料丝类型选择
+		{	
 			gltouchpara.validflg = false;
 			if (gltouchpara.value == KEY_LANG_RETURN)
 			{
@@ -267,7 +259,7 @@ void DGUS_Screen_Filament::KeyProcess()
 			}
 		}
 		else if (gltouchpara.address == ADDR_FILAMENT_KEY)
-		{	// 进丝界面 
+		{	
 			gltouchpara.validflg = false;
 			if (gltouchpara.value == KEY_FILAMENT_BUTTON_RETURN)
 			{
@@ -277,7 +269,6 @@ void DGUS_Screen_Filament::KeyProcess()
                     {
                         queue.enqueue_now_P("M410");
                         queue.enqueue_now_P("G92 E0");
-                        //queue.enqueue_now_P("G1 E-100 F300");
                         dgus.ShowMovingMessage();
                     }
                     else
@@ -297,7 +288,7 @@ void DGUS_Screen_Filament::KeyProcess()
 			}
 		}
 		else if (gltouchpara.address == ADDR_2OPTION_KEY)
-		{	// 喷头选择界面
+		{	
 			gltouchpara.validflg = false;
 			if (gltouchpara.value == KEY_2OPTION_BUTTON_RETURN)
 			{

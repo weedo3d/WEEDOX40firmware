@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "../../MarlinCore.h"
@@ -17,7 +13,7 @@
 #include "../../wtlib/WTCMD.h"
 
 #ifdef DGUS_LCD
-// 设置菜单
+
 void DGUS_Screen_Preview::Init()
 {
     dserial.LoadScreen(SCREEN_PREVIEW);
@@ -34,7 +30,7 @@ void DGUS_Screen_Preview::Init()
     if (!dgus.jobinfo.remote)
     {
         dserial.JPG_Reset();
-        // 解析gcode信息
+
         card.selectFileByIndex(dgus.jobinfo.index);
         gcodeinfo.parse(card.filename);
     }
@@ -78,7 +74,6 @@ void DGUS_Screen_Preview::KeyProcess()
             }
             else if (gltouchpara.value == KEY_PREVIEW_BUTTON2 && b_enable && b_dualmode)
             {
-                // 双喷头打印模式选择
                 dserial.LoadScreen(SCREEN_HELPMENU);
 
                 dserial.SendString(ADDR_HELPMENU_TEXT_TITLE, MMSG_PREVIEW_MODE[wtvar_language], TEXTLEN_HELPMENU_TITLE);
@@ -110,23 +105,26 @@ void DGUS_Screen_Preview::KeyProcess()
             }
             else if (gltouchpara.value == KEY_HELPMENU_BUTTON_ITEM1)
             {
+                wtvar_dual_mode = 0;
+                queue.enqueue_now_P("T0 S");
                 queue.enqueue_now_P("M605 S1");
-                // queue.enqueue_now_P("W225");
                 do_print();
             }
             else if (gltouchpara.value == KEY_HELPMENU_BUTTON_ITEM2)
             {
+                wtvar_dual_mode = 1;
                 move_center();
+                queue.enqueue_now_P("T0 S");
                 queue.enqueue_now_P("M605 S2");
-                // queue.enqueue_now_P("W225");
                 do_print();
             }
             else if (gltouchpara.value == KEY_HELPMENU_BUTTON_ITEM3)
             {
+                wtvar_dual_mode = 2;
                 move_center();
+                queue.enqueue_now_P("T0 S");
                 queue.enqueue_now_P("M605 S2");
                 queue.enqueue_now_P("M605 S3");
-                // queue.enqueue_now_P("W225");
                 do_print();
             }
         }
@@ -154,31 +152,17 @@ void DGUS_Screen_Preview::enable(bool action)
 void DGUS_Screen_Preview::do_print(void)
 {
     if (dgus.jobinfo.remote)
-    { // 打印WIFI盘文件
+    { 
         wt_ndisk_print();
         dgus.ShowLoading();
     }
     else
-    { // 打印本地文件
+    {
         card.selectFileByIndex(dgus.jobinfo.index);
         card.openAndPrintFile(card.filename);
         dgus.GotoPrintingMenu();
     }
 }
 
-// 将模型移动左起1/4位置
-void DGUS_Screen_Preview::move_center(void)
-{
-    float _center = (gcodeinfo.info.x_max + gcodeinfo.info.x_min) / 2;
-    float _diff = _center - X_BED_SIZE / 4;
-
-    LIMIT(_diff, - X_BED_SIZE * 0.75, X_BED_SIZE * 0.75);
-
-    char* buffer = (char*)malloc(30);
-    memset(buffer, 0, 30);
-	sprintf(buffer, "M206 X%.2f", _diff);
-    queue.enqueue_now_P(buffer);
-    free(buffer);
-}
 
 #endif

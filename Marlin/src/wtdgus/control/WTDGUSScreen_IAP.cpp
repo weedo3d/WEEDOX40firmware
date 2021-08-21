@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "../../MarlinCore.h"
@@ -21,7 +17,7 @@
 #define FLASH_FORCE_MODE    "20140506.wbs"
 
 #ifdef DGUS_LCD
-// 固件升级菜单 
+
 void DGUS_Screen_IAP::Init()
 {
 	dserial.LoadScreen(SCREEN_2BINFO);

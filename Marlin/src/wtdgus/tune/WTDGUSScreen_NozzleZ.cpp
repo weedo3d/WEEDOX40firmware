@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "../../MarlinCore.h"
@@ -18,7 +14,7 @@
 #include "../WTHelpDoc.h"
 
 #ifdef DGUS_LCD
-// 自动调平菜单 
+
 void DGUS_Screen_Nozzle_Z::Init()
 {
     pageid = 1;

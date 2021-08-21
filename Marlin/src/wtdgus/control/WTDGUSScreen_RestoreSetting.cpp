@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "../../MarlinCore.h"
@@ -21,7 +17,7 @@
 #include "../WTDGUSManager.h"
 
 #ifdef DGUS_LCD
-// 恢复出厂设置菜单 
+
 void DGUS_Screen_RestoreSetting::Init()
 {
 	dserial.LoadScreen(SCREEN_2BINFO);
@@ -48,14 +44,14 @@ void DGUS_Screen_RestoreSetting::KeyProcess()
 	if (gltouchpara.validflg)
 	{
 		if (gltouchpara.address == ADDR_2BINFO_KEY)
-		{	// 参数显示界面
+		{	
 			gltouchpara.validflg = false;
 			if (gltouchpara.value == KEY_2BINFO_ITEM2)
 			{
 				if (restoreConfirm)
 				{
 					settings.reset();
-					settings.save();				// 恢复出厂设置
+					settings.save();				
 					wt_restart();
 				}
 				else
@@ -76,7 +72,7 @@ void DGUS_Screen_RestoreSetting::KeyProcess()
 			}
 		}
 		else if (gltouchpara.address == ADDR_HELPMENU_KEY)
-		{	// 参数操作界面
+		{	
 			gltouchpara.validflg = false;
 			if (gltouchpara.value == KEY_HELPMENU_BUTTON_RETURN)
 			{

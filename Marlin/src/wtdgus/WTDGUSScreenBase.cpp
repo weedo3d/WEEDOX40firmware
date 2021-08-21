@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的基类
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "WTDGUSScreenBase.h"

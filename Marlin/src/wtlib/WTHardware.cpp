@@ -1,3 +1,7 @@
+/**
+* Copyright (C) 2021 Wiibooxtech Perron
+*/
+
 #include <libmaple/dma.h>
 #include <libmaple/usart.h>
 #include <libmaple/gpio.h>
@@ -116,7 +120,7 @@ void SerialInit(void)
 
 extern "C" void __irq_usart1(void) 
 {
-    uint8_t clear;  // 用来消除编译器的“没有用到”的提醒
+    uint8_t clear;  
 
     // perron, use dma to receive data
     if ((USART1_BASE->CR1 & USART_CR1_IDLEIE) && (USART1_BASE->SR & USART_SR_IDLE))
@@ -127,9 +131,9 @@ extern "C" void __irq_usart1(void)
         for (uint16_t i = 0; i < _len; i++)
             rb_push_insert(USART1->rb, host_rx_buf[i]); 
 
-        clear = USART1_BASE->SR;        //先读SR，然后读DR才能清除
-        clear  =USART1_BASE->DR;        // 清除DR 
-        clear = clear;                  // 防止编译器警告
+        clear = USART1_BASE->SR;      
+        clear  =USART1_BASE->DR;       
+        clear = clear;                 
 
         dma_disable(DMA1, DMA_CH5);             //disable the re-enable DMA channel to reset for the next burst of data
         DMA1_BASE->CNDTR5 = DMA_BUF_SIZE;
@@ -147,7 +151,7 @@ extern "C" void __irq_usart1(void)
 
 extern "C" void __irq_usart2(void) 
 {
-    uint8_t clear;  // 用来消除编译器的“没有用到”的提醒
+    uint8_t clear; 
 
     // perron, use dma to receive data
     if ((USART2_BASE->CR1 & USART_CR1_IDLEIE) && (USART2_BASE->SR & USART_SR_IDLE))
@@ -158,9 +162,9 @@ extern "C" void __irq_usart2(void)
         for (uint16_t i = 0; i < _len; i++)
             rb_push_insert(USART2->rb, wifi_rx_buf[i]); 
 
-        clear = USART2_BASE->SR;        //先读SR，然后读DR才能清除
-        clear  =USART2_BASE->DR;        // 清除DR 
-        clear = clear;                  // 防止编译器警告
+        clear = USART2_BASE->SR;       
+        clear  =USART2_BASE->DR;        
+        clear = clear;                  
 
         dma_disable(DMA1, DMA_CH6);             //disable the re-enable DMA channel to reset for the next burst of data
         DMA1_BASE->CNDTR6 = DMA_BUF_SIZE;
@@ -178,7 +182,7 @@ extern "C" void __irq_usart2(void)
 
 extern "C" void __irq_usart3(void) 
 {
-    uint8_t clear;  // 用来消除编译器的“没有用到”的提醒
+    uint8_t clear;  
 
     // perron, use dma to receive data
     if ((USART3_BASE->CR1 & USART_CR1_IDLEIE) && (USART3_BASE->SR & USART_SR_IDLE))
@@ -189,9 +193,9 @@ extern "C" void __irq_usart3(void)
         for (uint16_t i = 0; i < _len; i++)
             rb_push_insert(USART3->rb, lcd_rx_buf[i]); 
 
-        clear = USART3_BASE->SR;        //先读SR，然后读DR才能清除
-        clear  =USART3_BASE->DR;        // 清除DR 
-        clear = clear;                  // 防止编译器警告
+        clear = USART3_BASE->SR;       
+        clear  =USART3_BASE->DR;        
+        clear = clear;                  
 
         dma_disable(DMA1, DMA_CH3);             //disable the re-enable DMA channel to reset for the next burst of data
         DMA1_BASE->CNDTR3 = DMA_BUF_SIZE;

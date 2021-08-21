@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "../../MarlinCore.h"
@@ -13,7 +9,7 @@
 #include "../WTDGUSManager.h"
 
 #ifdef DGUS_LCD
-// 设置菜单 
+
 void DGUS_Screen_Help::Init()
 {
 	dserial.LoadScreen(SCREEN_HELPMENU);
@@ -73,7 +69,7 @@ void DGUS_Screen_Help::KeyProcess()
 		{
 			gltouchpara.validflg = false;
 			if (gltouchpara.value == KEY_QR_BUTTON_RETURN)
-			{	// 返回List界面
+			{	
 				dgus.GotoHelpMenu();
 			}
 		}

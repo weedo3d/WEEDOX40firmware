@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "../../MarlinCore.h"
@@ -21,7 +17,7 @@
 extern xyze_pos_t resume_position;
 
 #ifdef DGUS_LCD
-// 保存打印菜单 
+
 void DGUS_Screen_SavePrinting::Init()
 {
 	dgus.ShowNoRetrunMessage(MMSG_SAVE_PRINTING[wtvar_language]);
@@ -123,6 +119,9 @@ void DGUS_Screen_SavePrinting::Update()
 
 		// Elapsed print job time
 		recovery.info.print_job_elapsed = print_job_timer.duration();
+
+		// dual mode
+		recovery.info.dual_mode = wtvar_dual_mode;
 
 		// SD file position
 		card.getAbsFilename(recovery.info.sd_filename);

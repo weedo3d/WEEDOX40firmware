@@ -1,10 +1,7 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
-/*
-* DGus 窗口类的定义
-*/
 
 #include "../../MarlinCore.h"
 #include "../../module/temperature.h"
@@ -16,12 +13,11 @@
 #include "../WTDGUSManager.h"
 #include "../WTHelpDoc.h"
 #include "../../feature/bedlevel/bedlevel.h"
-// #include "../../feature\bedlevel\abl\abl.h"
 
 extern bed_mesh_t z_values;
 
 #ifdef DGUS_LCD
-// 自动调平菜单 
+
 void DGUS_Screen_Levelbed::Init()
 {
 	dserial.LoadScreen(SCREEN_LEVEL);

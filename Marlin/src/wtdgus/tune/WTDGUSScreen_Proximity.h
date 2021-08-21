@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #ifndef WTDUGSSCREEN_PROXIMITY_H
@@ -12,8 +8,6 @@
 #include "../WTDGUSScreenBase.h"
 #include "../WTDGUSConfig.h"
 
-
-// 自动调平菜单 
 class DGUS_Screen_Proximity : public DGUS_Screen_Base
 {
 public:

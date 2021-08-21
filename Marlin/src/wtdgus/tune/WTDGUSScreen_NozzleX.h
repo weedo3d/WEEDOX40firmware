@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #ifndef WTDUGSSCREEN_NOZZLE_X_H
@@ -13,7 +9,6 @@
 #include "../WTDGUSConfig.h"
 
 
-// 自动调平菜单 
 class DGUS_Screen_Nozzle_X : public DGUS_Screen_Base
 {
 public:
@@ -23,8 +18,11 @@ public:
 
 private:
     uint8_t tempX;
+	uint8_t tempY;
+    uint8_t pageid = 0;
     
 	void ShowButtonOn(uint8_t id);
+	void ShowPage(void);
 };
 
 #endif

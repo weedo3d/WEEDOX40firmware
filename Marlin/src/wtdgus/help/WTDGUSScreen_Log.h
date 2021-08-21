@@ -1,10 +1,7 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
-/*
-* DGus 窗口类的定义
-*/
 
 #ifndef WTDUGSSCREEN_LOG_H
 #define WTDUGSSCREEN_LOG_H
@@ -13,7 +10,6 @@
 #include "../WTDGUSConfig.h"
 
 
-// 自动调平菜单 
 class DGUS_Screen_Log : public DGUS_Screen_ScrollList
 {
 public:

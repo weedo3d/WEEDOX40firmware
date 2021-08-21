@@ -38,20 +38,13 @@
  * Notes:
  *   This has no effect during an SD print job
  */
-void GcodeSuite::M73() {    // perron, todo
-  // if (parser.seen('P'))
-  //   ui.set_progress((PROGRESS_SCALE) > 1
-  //     ? parser.value_float() * (PROGRESS_SCALE)
-  //     : parser.value_byte()
-  //   );
-//   #if BOTH(LCD_SET_PROGRESS_MANUALLY, USE_M73_REMAINING_TIME)
-//     if (parser.seen('R')) ui.set_remaining_time(60 * parser.value_ulong());
-//   #endif
-    if (parser.seen('P') && wt_onlineprinting == SPARK_PRINTING)			// perron: only use M73 when online printing
-	{
-      progress_bar_percent = parser.value_byte();
-      NOMORE(progress_bar_percent, 100);
-    }
+void GcodeSuite::M73()
+{
+  if (parser.seen('P') && wt_onlineprinting == SPARK_PRINTING) // perron: only use M73 when online printing
+  {
+    progress_bar_percent = parser.value_byte();
+    NOMORE(progress_bar_percent, 100);
+  }
 }
 
 #endif // LCD_SET_PROGRESS_MANUALLY

@@ -1,11 +1,6 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
+* Copyright (C) 2021 Wiibooxtech Perron
 */
-
-/*
-* DGus 窗口类的定义
-*/
-
 #include "../../MarlinCore.h"
 #include "../../module/temperature.h"
 #include "../../sd/cardreader.h"
@@ -23,7 +18,7 @@ extern char esp32_version[8];
 extern char uploadFilename[FILENAME_LENGTH];
 
 #ifdef DGUS_LCD
-// 网络设置菜单 
+
 void DGUS_Screen_WifiDisk::Init()
 {
 	dserial.SendString(ADDR_TF_TITLE, MMSG_TF_TITLE[wtvar_language], TEXTLEN_TF_TITLE);
@@ -41,8 +36,7 @@ void DGUS_Screen_WifiDisk::Init()
 
 void DGUS_Screen_WifiDisk::Update()
 {
-	// dserial.SendString(ADDR_MACHINE_VALUE1, esp32_version, 16);
-	// dserial.SendString(ADDR_MACHINE_VALUE2, ipAddress, 16);
+
 }
 
 void DGUS_Screen_WifiDisk::KeyProcess()
@@ -116,13 +110,12 @@ void DGUS_Screen_WifiDisk::ShowPage(void)
 	while (curIndex < dgus.ndisk_listcount)
 	{
 		ZERO(filename_buffer);
-		// UTF8转为unicode编码
+
 		uint16_t _len = Utf8ToUnicode(dgus.ndisk_filelist[curIndex], filename_buffer);
 		ShowFileInfo(filename_buffer, _len, curIndex);
 		curIndex++;
 	}
 
-	// 剩余空行清空
 	while (curIndex < 6)
 	{
 		ShowFileInfo(NULL, 0, curIndex);
@@ -141,7 +134,6 @@ void DGUS_Screen_WifiDisk::ShowPage(void)
 
 }
 
-// 发送文件名
 void DGUS_Screen_WifiDisk::ShowFileInfo(char* filename, uint16_t len, uint8_t index)
 {
 	if (len == 0)

@@ -1,23 +1,11 @@
 /**
-* Copyright (C) 2019 Wiibooxtech Perron
-*/
-
-/**
-* PC端指令
-* 0x30
-*	返回码
-*	0x30 待机
-*	0x31 正在打印
-*	0x32 打印暂停
-*	0x33 打印取消
-*	0x34 打印完成
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "CRC8.h"
 #include "WTPacket.h"
 #include "WTCMD.h"
 #include "../core/serial.h"
-// #include "SdFatConfig.h"
 #include "../sd/cardreader.h"
 #include "../module/temperature.h"
 #include "../libs/duration_t.h"
@@ -25,35 +13,26 @@
 #include "../wtdgus/WTDGUSManager.h"
 #include "../gcode/queue.h"
 
- extern "C" { 
-//#include "usart.h" 
- }
+extern WT_STATUS wt_machineStatus;
+extern InPacket inp0;
+extern InPacket inp3;
+extern OutPacket outp0;
+extern OutPacket outp3;
+extern char uploadFilename[FILENAME_LENGTH + 2];
 
- extern WT_STATUS wt_machineStatus;
- extern InPacket inp0;
- extern InPacket inp3;
- extern OutPacket outp0;
- extern OutPacket outp3;
- extern char uploadFilename[FILENAME_LENGTH +2];
- //extern void wtlcd_ShowUploadingScreen();
- //extern void wtlcd_ShowUploadFailScreen();
- //extern void wt_CloseUploadScreen();
- //extern void lcd_setstatus(const char* message, const bool persist = false);
- //extern void lcd_sdcard_stop();
+char packetCommand[MAX_CMD_SIZE];
+extern char wifi_ssid[30];
+extern char wifi_pwd[30];
 
- char packetCommand[MAX_CMD_SIZE];
- extern char wifi_ssid[30];
- extern char wifi_pwd[30];
- 
 /// Append a byte and update the CRC
- void Packet::appendByte(uint8_t data)
+void Packet::appendByte(uint8_t data)
 {
-	if (length < MAX_PACKET_PAYLOAD) 
+	if (length < MAX_PACKET_PAYLOAD)
 	{
 		payload[length] = data;
 		length++;
 	}
-	else 
+	else
 		error(RC_BUFFER_OVERFLOW);
 }
 
@@ -62,7 +41,6 @@ void Packet::error(ResponseCode error_code_in)
 	Reset();
 	rcode = error_code_in;
 }
-
 
 char Packet::Get_Error(void)
 {
@@ -75,57 +53,57 @@ void Packet::Reset()
 	crc = 0;
 	length = 0;
 
-	memset((char *)payload, 0 , MAX_PACKET_PAYLOAD);
+	memset((char *)payload, 0, MAX_PACKET_PAYLOAD);
 	rcode = RC_OK;
 	state = PS_START;
 }
 
 void InPacket::Receiver(uint8_t b)
 {
-	if (state == PS_START) 
+	if (state == PS_START)
 	{
-		if (b == START_BYTE) 	// 读取到第1个字节，与开始字节符合的话进入下一个阶段
+		if (b == START_BYTE) 
 		{
-			state = PS_LEN;			
-		} 
-	} 
-	else if (state == PS_LEN) 
+			state = PS_LEN;
+		}
+	}
+	else if (state == PS_LEN)
 	{
-		if (b <= MAX_PACKET_PAYLOAD) 	// 读取到第2个字节，表示payload的长度
+		if (b <= MAX_PACKET_PAYLOAD) 
 		{
 			expected_length = b;
 			if (expected_length == 0)
 				error(RC_PACKET_ERROR);
 			else
 				state = PS_PAYLOAD;
-		} 
-		else 
+		}
+		else
 		{
 			error(RC_BUFFER_OVERFLOW);
 		}
-	} 
+	}
 	else if (state == PS_PAYLOAD)
 	{
 		appendByte(b);
-		if (length >= expected_length) 
+		if (length >= expected_length)
 		{
 			state = PS_CRC;
 		}
-	} 
-	else if (state == PS_CRC) 
+	}
+	else if (state == PS_CRC)
 	{
 		crc = CRC8(payload, 0, length);
-		if (crc == b) 
+		if (crc == b)
 			state = PS_END;
-		else 
-			error(RC_CRC_MISMATCH);		
+		else
+			error(RC_CRC_MISMATCH);
 	}
 	else if (state == PS_END)
 	{
 		if (b == END_BYTE)
 		{
 			if (port == 0)
-				wtvar_uart0_binmode = true;	// 收到数据包后，即进入二进制通讯模式
+				wtvar_uart0_binmode = true; 
 			PayloadProcess();
 			Reset();
 		}
@@ -157,10 +135,10 @@ void InPacket::Process_State(void)
 	case WS_FINISH:
 		outp->appendByte(0x34);
 		break;
-    case WS_UPLOADING:
+	case WS_UPLOADING:
 		outp->appendByte(0x35);
 		break;
-    case WS_ERROR:
+	case WS_ERROR:
 		outp->appendByte(0x36);
 		break;
 	}
@@ -169,37 +147,36 @@ void InPacket::Process_State(void)
 
 void InPacket::Process_BeginWrite(void)
 {
-    if (wt_machineStatus == WS_PRINTING || wt_machineStatus == WS_PAUSE)
-    {
-        // 打印时不允许下载文件
-        outp->Reset();
-	    outp->appendByte('W');
-        outp->appendByte(0x31);			
+	if (wt_machineStatus == WS_PRINTING || wt_machineStatus == WS_PAUSE)
+	{
+		outp->Reset();
+		outp->appendByte('W');
+		outp->appendByte(0x31);
 		outp->Send();
-        return;
-    }
+		return;
+	}
 
 	ZERO(uploadFilename);
-	strncpy(uploadFilename, (const char*)&payload[1], length - 1);
+	strncpy(uploadFilename, (const char *)&payload[1], length - 1);
 	uploadFilename[length] = 0;
-	dgus.ShowUploadingMenu(uploadFilename);		// 显示下载界面 
-    filelength = 0;
-    received = 0;
+	dgus.ShowUploadingMenu(uploadFilename); 
+	filelength = 0;
+	received = 0;
 
 	outp->Reset();
 	outp->appendByte('W');
 	if (card.openFileWrite(uploadFilename))
 	{
-		outp->appendByte(0x30);			// open file ok
+		outp->appendByte(0x30); // open file ok
 		outp->Send();
-        wt_machineStatus = WS_UPLOADING;
+		wt_machineStatus = WS_UPLOADING;
 	}
 	else
 	{
-		outp->appendByte(0x31);			// open file fail
+		outp->appendByte(0x31); // open file fail
 		outp->Send();
 		dgus.ShowUploadFailMenu();
-        wt_machineStatus = WS_ERROR;
+		wt_machineStatus = WS_ERROR;
 	}
 }
 
@@ -209,27 +186,27 @@ void InPacket::Process_WritePage(void)
 	outp->appendByte('D');
 	if (rcode == RC_OK)
 	{
-		if (card.write((char*)&payload[1], length - 1))
+		if (card.write((char *)&payload[1], length - 1))
 		{
-			outp->appendByte(0x30);			// save file ok
+			outp->appendByte(0x30); // save file ok
 			outp->Send();
 		}
 		else
 		{
-			outp->appendByte(0x31);			// save file fail
+			outp->appendByte(0x31); // save file fail
 			outp->Send();
-			card.closefile();			// 关闭文件
+			card.closefile(); 
 			dgus.ShowUploadFailMenu();
-            wt_machineStatus = WS_ERROR;
+			wt_machineStatus = WS_ERROR;
 		}
-        received += length - 1;
+		received += length - 1;
 	}
 	else
 	{
-		outp->appendByte(0x32);			// 数据包错误，请求重新发送
+		outp->appendByte(0x32); 
 		outp->Send();
 		dgus.ShowUploadFailMenu();
-        wt_machineStatus = WS_ERROR;
+		wt_machineStatus = WS_ERROR;
 	}
 }
 
@@ -239,40 +216,39 @@ void InPacket::Process_EndWrite(void)
 	outp->appendByte('E');
 	if (rcode == RC_OK)
 	{
-        if (length > 1)
-        {
-            if (card.write((char*)&payload[1], length - 1))
-            {
-                outp->appendByte(0x30);			// save file ok
-                outp->Send();
-                dgus.GotoMain();
-                wt_machineStatus = WS_IDLE;
-            }
-            else
-            {
-                outp->appendByte(0x31);			// save file fail
-                outp->Send();
-                dgus.ShowUploadFailMenu();
-                wt_machineStatus = WS_ERROR;
-            }
-        }
+		if (length > 1)
+		{
+			if (card.write((char *)&payload[1], length - 1))
+			{
+				outp->appendByte(0x30); // save file ok
+				outp->Send();
+				dgus.GotoMain();
+				wt_machineStatus = WS_IDLE;
+			}
+			else
+			{
+				outp->appendByte(0x31); // save file fail
+				outp->Send();
+				dgus.ShowUploadFailMenu();
+				wt_machineStatus = WS_ERROR;
+			}
+		}
 		else
-        {
-            outp->appendByte(0x30);			// save file ok
-            outp->Send();
-            dgus.GotoMain();
-            wt_machineStatus = WS_IDLE;
-        }
+		{
+			outp->appendByte(0x30); // save file ok
+			outp->Send();
+			dgus.GotoMain();
+			wt_machineStatus = WS_IDLE;
+		}
 
-		card.closefile();			// 关闭文件
-
+		card.closefile(); 
 	}
 	else
 	{
-		outp->appendByte(0x32);			// 数据包错误，请求重新发送
+		outp->appendByte(0x32); 
 		outp->Send();
 		dgus.ShowUploadFailMenu();
-        wt_machineStatus = WS_ERROR;
+		wt_machineStatus = WS_ERROR;
 	}
 }
 
@@ -285,12 +261,11 @@ void InPacket::Process_Version(void)
 {
 	outp->Reset();
 
-	uint8_t* p2 = outp->payload;
+	uint8_t *p2 = outp->payload;
 
-	sprintf_P((char*)p2, PSTR("VN:%s H:%s F:%s A:%s W:%s G:%s"), MACHINE_NAME, HARDWARE_VERSION, SHORT_BUILD_VERSION, ipAddress, esp32_hardware, esp32_version);
+	sprintf_P((char *)p2, PSTR("VN:%s H:%s F:%s A:%s W:%s G:%s"), MACHINE_NAME, HARDWARE_VERSION, SHORT_BUILD_VERSION, ipAddress, esp32_hardware, esp32_version);
 
 	outp->Send();
-
 }
 
 void InPacket::Process_Temperature(void)
@@ -301,7 +276,7 @@ void InPacket::Process_Temperature(void)
 	int t1 = 0;
 	int b0 = 0;
 	int c0 = 0;
-	uint8_t* p2 = outp->payload;
+	uint8_t *p2 = outp->payload;
 
 	t0 = thermalManager.degHotend(0);
 
@@ -317,17 +292,16 @@ void InPacket::Process_Temperature(void)
 	c0 = thermalManager.degChamber();
 #endif
 
-	sprintf_P((char*)p2, PSTR("TT0:%d T1:%d B:%d C:%d"), t0, t1, b0, c0);
+	sprintf_P((char *)p2, PSTR("TT0:%d T1:%d B:%d C:%d"), t0, t1, b0, c0);
 
 	outp->Send();
-
 }
 
 void InPacket::Process_Print(void)
 {
 	outp->Reset();
 
-	uint8_t* p2 = outp->payload;
+	uint8_t *p2 = outp->payload;
 	char printfile[20];
 	memset(printfile, 0, 20);
 	card.getPrintingFilename(printfile);
@@ -339,7 +313,7 @@ void InPacket::Process_Print(void)
 	duration_t elapsed = print_job_timer.duration();
 	elapsed.toString(buffer);
 
-	sprintf_P((char*)p2, PSTR("SF:%s P:%d B:%s"), printfile, percent, buffer);
+	sprintf_P((char *)p2, PSTR("SF:%s P:%d B:%s"), printfile, percent, buffer);
 
 	outp->Send();
 }
@@ -368,27 +342,27 @@ void InPacket::Process_Filedelete(void)
 	if (rcode == RC_OK)
 	{
 		bool ret = false;
-		if (card.flag.mounted) 
+		if (card.flag.mounted)
 		{
 			card.closefile();
-			if (card.removeFile((const char*)&payload[1]))
+			if (card.removeFile((const char *)&payload[1]))
 				ret = true;
 		}
 
 		if (ret)
 		{
-			outp->appendByte(0x30);			// delete file ok
+			outp->appendByte(0x30); // delete file ok
 			outp->Send();
 		}
 		else
 		{
-			outp->appendByte(0x31);			// delete file fail
+			outp->appendByte(0x31); // delete file fail
 			outp->Send();
 		}
 	}
 	else
 	{
-		outp->appendByte(0x32);			// 数据包错误，请求重新发送
+		outp->appendByte(0x32); 
 		outp->Send();
 		dgus.ShowUploadFailMenu();
 	}
@@ -400,7 +374,7 @@ void InPacket::Process_GCode(void)
 	outp->appendByte('G');
 	if (queue.length < BUFSIZE)
 	{
-        queue.enqueue_one_now((const char*)&payload[1]);
+		queue.enqueue_one_now((const char *)&payload[1]);
 		outp->appendByte(0x30);
 	}
 	else
@@ -425,18 +399,17 @@ void InPacket::Proess_WifiSetting(void)
 	outp->appendByte(0x30);
 	outp->Send();
 
-	memset(wifi_ssid, 0,30);
+	memset(wifi_ssid, 0, 30);
 	memset(wifi_pwd, 0, 30);
 
-	int spacepos = strchr((const char*)&payload[1], ' ') - (const char*)&payload[1];
-	int plen = strlen((char*)payload) - 1;
+	int spacepos = strchr((const char *)&payload[1], ' ') - (const char *)&payload[1];
+	int plen = strlen((char *)payload) - 1;
 	if (spacepos > 0 && spacepos < plen)
 	{
-		strncpy(wifi_ssid, (const char*)&payload[1], spacepos);
-		strncpy(wifi_pwd, (const char*)&payload[spacepos + 2], plen - spacepos - 1);
+		strncpy(wifi_ssid, (const char *)&payload[1], spacepos);
+		strncpy(wifi_pwd, (const char *)&payload[spacepos + 2], plen - spacepos - 1);
 		WT_WIFI_Join();
 	}
-
 }
 
 void InPacket::Process_Reboot(void)
@@ -447,29 +420,29 @@ void InPacket::Process_Reboot(void)
 	outp->Send();
 
 	wt_restart();
-	while (1);
+	while (1)
+		;
 }
 
 extern uint8_t wifiStatus;
 void InPacket::Process_GetIP(void)
 {
-	char* tempS;
-	tempS = (char*)&payload[1];
+	char *tempS;
+	tempS = (char *)&payload[1];
 
 	memset(ipAddress, 0, 16);
 	if (strstr_P(tempS, PSTR("Disconnected")) != NULL)
 	{
-        strcpy(ipAddress, "OFF");
+		strcpy(ipAddress, "OFF");
 		wifiStatus = WIFI_OFF;
 	}
 	else
 	{
-        strcpy(ipAddress, tempS);
+		strcpy(ipAddress, tempS);
 		wifiStatus = WIFI_OK;
 	}
-    
-	//lcd_setstatus(ipAddress);
-	 outp->Reset();
+
+	outp->Reset();
 	outp->appendByte('I');
 	outp->appendByte(0x30);
 	outp->Send();
@@ -477,8 +450,8 @@ void InPacket::Process_GetIP(void)
 
 void InPacket::Process_GetESP32HV(void)
 {
-	char* tempS;
-	tempS = (char*)&payload[1];
+	char *tempS;
+	tempS = (char *)&payload[1];
 
 	memset(esp32_hardware, 0, 8);
 	if (strlen(tempS) <= 8)
@@ -494,8 +467,8 @@ void InPacket::Process_GetESP32HV(void)
 
 void InPacket::Process_GetESP32FV(void)
 {
-	char* tempS;
-	tempS = (char*)&payload[1];
+	char *tempS;
+	tempS = (char *)&payload[1];
 	uint8_t templen = strlen(tempS);
 
 	memset(esp32_version, 0, 8);
@@ -516,8 +489,8 @@ void InPacket::Process_GetESP32FV(void)
 
 void InPacket::Process_GetESP32NAME(void)
 {
-	char* tempS;
-	tempS = (char*)&payload[1];
+	char *tempS;
+	tempS = (char *)&payload[1];
 
 	memset(esp32_name, 0, 12);
 	if (strlen(tempS) <= 11)
@@ -534,8 +507,8 @@ void InPacket::Process_GetESP32NAME(void)
 extern char esp32_serial[16];
 void InPacket::Process_GetESP32Serial(void)
 {
-	char* tempS;
-	tempS = (char*)&payload[1];
+	char *tempS;
+	tempS = (char *)&payload[1];
 
 	memset(esp32_serial, 0, 16);
 	if (strlen(tempS) <= 15)
@@ -558,102 +531,102 @@ void InPacket::Process_AbortPrinting(void)
 
 	safe_delay(500);
 
-	//lcd_sdcard_stop();
-	while (1);
+	while (1)
+		;
 }
 
 void InPacket::Process_FileLength(void)
 {
-    char tempStr[10] = {0};
-	strncpy(tempStr, (const char*)&payload[1], length - 1);
-    filelength = atoi(tempStr);
+	char tempStr[10] = {0};
+	strncpy(tempStr, (const char *)&payload[1], length - 1);
+	filelength = atoi(tempStr);
 }
 
 void InPacket::PayloadProcess(void)
 {
 	if (length > 0)
 	{
-		switch(payload[0])
+		switch (payload[0])
 		{
-			case '0':		// 查询控制器状态
-				Process_State();
-				break;
+		case '0': 
+			Process_State();
+			break;
 
-			case 'W':		// 开始写入文件
-				Process_BeginWrite();
-				break;
+		case 'W': 
+			Process_BeginWrite();
+			break;
 
-			case 'D':		// 写入文件数据
-				Process_WritePage();
-				break;
+		case 'D': 
+			Process_WritePage();
+			break;
 
-			case 'E':		// 保存并结束文件传输
-				Process_EndWrite();
-				break;
+		case 'E': 
+			Process_EndWrite();
+			break;
 
-			case 'T':		// 查询温度
-				Process_Temperature();
-				break;
+		case 'T': 
+			Process_Temperature();
+			break;
 
-			case 'S':		// 查询打印详情
-				Process_Print();
-				break;
+		case 'S':
+			Process_Print();
+			break;
 
-			case 'V':		// 查询版本信息
-				Process_Version();
-				break;
+		case 'V':
+			Process_Version();
+			break;
 
-			case 'B':		// 显示文件列表
-				Process_Filelist();
-				break;
+		case 'B':
+			Process_Filelist();
+			break;
 
-			case 'R':		// 删除文件
-				Process_Filedelete();
-				break;
+		case 'R': 
+			Process_Filedelete();
+			break;
 
-			case 'G':		// 发送GCode
-				Process_GCode();
-				break;
+		case 'G': 
+			Process_GCode();
+			break;
 
-			case 'N':		// 设置Wifi网络
-				Proess_WifiSetting();
-				break;
+		case 'N': 
+			Proess_WifiSetting();
+			break;
 
-			case 'X':		// 立即重启
-				Process_Reboot();
-				break;
+		case 'X': 
+			Process_Reboot();
+			break;
 
-			case 'I':		// 获得IP地址
-				Process_GetIP();
-				break;
+		case 'I': 
+			Process_GetIP();
+			break;
 
-			case 'H':		// 获得ESP32硬件版本
-				Process_GetESP32HV();
-				break;
+		case 'H': 
+			Process_GetESP32HV();
+			break;
 
-			case 'F':		// 获得ESP32固件版本
-				Process_GetESP32FV();
-				break;
+		case 'F': 
+			Process_GetESP32FV();
+			break;
 
-			case 'J':		// 获得ESP32设备名称
-				Process_GetESP32NAME();
-				break;
+		case 'J': 
+			Process_GetESP32NAME();
+			break;
 
-			case 'K':		// 获得设备序列号
-				Process_GetESP32Serial();
-				break;
+		case 'K': 
+			Process_GetESP32Serial();
+			break;
 
-			case 'A':		// 取消打印
-				Process_AbortPrinting();
-				break;
+		case 'A': 
+			Process_AbortPrinting();
+			break;
 
-            case 'U':       // 下载文件长度
-                Process_FileLength();
-                break;
+		case 'U': 
+			Process_FileLength();
+			break;
 
-			default:
-				Process_Unknown();
-				break;
+		default:
+			Process_Unknown();
+			break;
 		}
 	}
 	else
@@ -675,7 +648,7 @@ void OutPacket::Send(void)
 	for (i = 0; i < MAX_PACKET_PAYLOAD; i++)
 	{
 		if (payload[i] == 0)
-		 break;
+			break;
 	}
 	length = i;
 	buffer[0] = START_BYTE;
@@ -686,9 +659,8 @@ void OutPacket::Send(void)
 	buffer[length + 2] = crc;
 	buffer[length + 3] = END_BYTE;
 
-    if (port == 0)
-	    MYSERIAL0.write(buffer, length + 4);
-    else
-	    MYSERIAL1.write(buffer, length + 4);
+	if (port == 0)
+		MYSERIAL0.write(buffer, length + 4);
+	else
+		MYSERIAL1.write(buffer, length + 4);
 }
-

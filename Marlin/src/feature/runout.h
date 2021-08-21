@@ -33,17 +33,13 @@
 
 #include "../inc/MarlinConfig.h"
 
-#if ENABLED(EXTENSIBLE_UI)
-  #include "../lcd/extui/ui_api.h"
-#endif
-
 #if ENABLED(ADVANCED_PAUSE_FEATURE)
   #include "pause.h"
 #endif
 
-//#define FILAMENT_RUNOUT_SENSOR_DEBUG
+#define FILAMENT_RUNOUT_SENSOR_DEBUG
 #ifndef FILAMENT_RUNOUT_THRESHOLD
-  #define FILAMENT_RUNOUT_THRESHOLD 5
+  #define FILAMENT_RUNOUT_THRESHOLD 500
 #endif
 
 void event_filament_runout();
@@ -51,8 +47,8 @@ void event_filament_runout();
 class RunoutResponseDebounced 
 {
     private:
-        static constexpr int8_t runout_threshold = FILAMENT_RUNOUT_THRESHOLD;
-        static int8_t runout_count;
+        static constexpr int16_t runout_threshold = FILAMENT_RUNOUT_THRESHOLD;
+        static int16_t runout_count;
     public:
         static inline void reset()                                  { runout_count = runout_threshold; }
         static inline void run()                                    { if (runout_count >= 0) runout_count--; }
@@ -61,24 +57,25 @@ class RunoutResponseDebounced
         static inline void filament_present(const uint8_t)          { runout_count = runout_threshold; }
 };
 
-/*************************** FILAMENT PRESENCE SENSORS ***************************/
-
-class FilamentSensorBase 
+/**
+ * This is a simple endstop switch in the path of the filament.
+ * It can detect filament runout, but not stripouts or jams.
+ */
+class FilamentSensorSwitch  
 {
-  protected:
-    static void filament_present(const uint8_t extruder);
+private:
+    static inline bool poll_runout_state(const uint8_t extruder) {
+    const uint8_t runout_states = poll_runout_states();
 
-  public:
+    if (dual_x_carriage_mode == DXC_DUPLICATION_MODE || dual_x_carriage_mode == DXC_MIRRORED_MODE)
+        return runout_states;               // Any extruder
+
+    return TEST(runout_states, extruder); // Specific extruder
+    }
+
+public:
     static inline void setup() {
-      #if ENABLED(FIL_RUNOUT_PULLUP)
-        #define INIT_RUNOUT_PIN(P) SET_INPUT_PULLUP(P)
-      #elif ENABLED(FIL_RUNOUT_PULLDOWN)
-        #define INIT_RUNOUT_PIN(P) SET_INPUT_PULLDOWN(P)
-      #else
-        #define INIT_RUNOUT_PIN(P) SET_INPUT(P)
-      #endif
-
-      #define _INIT_RUNOUT(N) INIT_RUNOUT_PIN(FIL_RUNOUT##N##_PIN);
+      #define _INIT_RUNOUT(N) SET_INPUT_PULLUP(FIL_RUNOUT##N##_PIN);
       REPEAT_S(1, INCREMENT(NUM_RUNOUT_SENSORS), _INIT_RUNOUT)
       #undef _INIT_RUNOUT
     }
@@ -92,47 +89,11 @@ class FilamentSensorBase
 
     // Return a bitmask of runout flag states (1 bits always indicates runout)
     static inline uint8_t poll_runout_states() {
-      return (poll_runout_pins()
-        #if DISABLED(FIL_RUNOUT_INVERTING)
-          ^ uint8_t(_BV(NUM_RUNOUT_SENSORS) - 1)
-        #endif
-      );
+      return (poll_runout_pins());
     }
 
-  #undef INIT_RUNOUT_PIN
-};
+    static void filament_present(const uint8_t extruder);
 
-/**
- * This is a simple endstop switch in the path of the filament.
- * It can detect filament runout, but not stripouts or jams.
- */
-class FilamentSensorSwitch : public FilamentSensorBase {
-private:
-    static inline bool poll_runout_state(const uint8_t extruder) {
-    const uint8_t runout_states = poll_runout_states();
-
-    #if NUM_RUNOUT_SENSORS == 1
-        UNUSED(extruder);
-    #endif
-
-    if (true
-        #if NUM_RUNOUT_SENSORS > 1
-        #if ENABLED(DUAL_X_CARRIAGE)
-            && (dual_x_carriage_mode == DXC_DUPLICATION_MODE || dual_x_carriage_mode == DXC_MIRRORED_MODE)
-        #elif ENABLED(MULTI_NOZZLE_DUPLICATION)
-            && extruder_duplication_enabled
-        #else
-            && false
-        #endif
-        #endif
-    ) return runout_states;               // Any extruder
-
-    #if NUM_RUNOUT_SENSORS > 1
-        return TEST(runout_states, extruder); // Specific extruder
-    #endif
-    }
-
-public:
     static inline void block_completed(const block_t* const) {}
 
     static inline void run() {
@@ -151,29 +112,27 @@ public:
     }
 };
 
-class FilamentMonitorBase 
+class FilamentMonitor    
 {
+  private:
+    static  RunoutResponseDebounced response;
+    static  FilamentSensorSwitch sensor;
+    
   public:
     static bool enabled, filament_ran_out;
+    static  uint8_t last_active_extruder;
 
     #if ENABLED(HOST_ACTION_COMMANDS)
       static bool host_handling;
     #else
       static constexpr bool host_handling = false;
     #endif
-};
 
-class FilamentMonitor : public FilamentMonitorBase 
-{
-  private:
-    static  RunoutResponseDebounced response;
-    static  FilamentSensorSwitch sensor;
-
-  public:
     static inline void setup() 
     {
       sensor.setup();
       reset();
+      last_active_extruder = active_extruder;
     }
 
     static inline void reset() 
@@ -203,11 +162,10 @@ class FilamentMonitor : public FilamentMonitorBase
     // Give the response a chance to update its counter.
     static inline void run() 
     {
-      if (enabled && !filament_ran_out && (printingIsActive()
-        #if ENABLED(ADVANCED_PAUSE_FEATURE)
-          || did_pause_print
-        #endif
-      )) 
+      if (last_active_extruder != active_extruder)
+        response.reset();
+
+      if (enabled && !filament_ran_out && (printingIsActive() || did_pause_print)) 
       {
         response.run();
         sensor.run();

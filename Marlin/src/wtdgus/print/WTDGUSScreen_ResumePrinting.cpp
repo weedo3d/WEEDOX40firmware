@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "../../MarlinCore.h"
@@ -19,12 +15,12 @@
 #include "../WTDGUSManager.h"
 #include "../../wtlib/WTGcodeinfo.h"
 #include "../../wtlib/WTUtilty.h"
-// #include "../../wtlib/GbkToUtf_8.h"
+#include "../../wtlib/WTCMD.h"
 
 #define RESUME_PREHEAT_TEMP		160
 
 #ifdef DGUS_LCD
-// 恢复打印菜单
+
 void DGUS_Screen_ResumePrinting::Init()
 {
 	dserial.LoadScreen(SCREEN_2BINFO);
@@ -40,11 +36,7 @@ void DGUS_Screen_ResumePrinting::Init()
 
 void DGUS_Screen_ResumePrinting::Update()
 {
-	// uint8_t sdnametmp[20] = {0};
-	// uint8_t indextmp, filenamelen, *pdatatmp, bytedatatmp[4];
 	char headgcode[MAX_CMD_SIZE + 16] = {0}, str_1[16], str_2[16];	// flchar[10] = {0};
-	// uint16_t databufhi, databuflo;
-	// uint32_t databufall;
     static uint32_t _spos;
 
 	switch (state)
@@ -53,7 +45,7 @@ void DGUS_Screen_ResumePrinting::Update()
 	{
         ShowRecoveryInfo();
         _spos = recovery.info.sdpos;
-		SERIAL_ECHO("preheat");
+		SERIAL_ECHOLNPGM("preheat");
 		HOTEND_LOOP()
 		{
 			thermalManager.setTargetHotend(RESUME_PREHEAT_TEMP, e);
@@ -65,29 +57,51 @@ void DGUS_Screen_ResumePrinting::Update()
 
 	case DSEP_WAITPREHEAT:
 	{
-		if ((thermalManager.degHotend(0) >= RESUME_PREHEAT_TEMP - 2) &&
-			(thermalManager.degHotend(0) <= RESUME_PREHEAT_TEMP + 2))
+		if (recovery.info.dual_mode == 0)
 		{
-			SERIAL_ECHO("start");
-			state = DSEP_START;
+			if ((thermalManager.degHotend(recovery.info.active_extruder) >= RESUME_PREHEAT_TEMP - 2) &&
+				(thermalManager.degHotend(recovery.info.active_extruder) <= RESUME_PREHEAT_TEMP + 2))
+			{
+				SERIAL_ECHOLNPGM("homing");
+				state = DSEP_HOMING;
+			}
+		}
+		else
+		{
+			if ((thermalManager.degHotend(0) >= RESUME_PREHEAT_TEMP - 2) &&
+				(thermalManager.degHotend(0) <= RESUME_PREHEAT_TEMP + 2) &&
+				(thermalManager.degHotend(1) >= RESUME_PREHEAT_TEMP - 2) &&
+				(thermalManager.degHotend(1) <= RESUME_PREHEAT_TEMP + 2))
+			{
+				SERIAL_ECHOLNPGM("homing");
+				state = DSEP_HOMING;
+			}
 		}
 	}
 	break;
 
-	case DSEP_START:
+	case DSEP_HOMING:
 	{
 		queue.enqueue_now_P(PSTR("G28 R5 XY"));
 		queue.enqueue_now_P(PSTR("M420 S1"));
         sprintf_P(headgcode, PSTR("T%i S"), recovery.info.active_extruder);
         queue.enqueue_one_now(headgcode);
-		//queue.enqueue_now_P(PSTR("M420 V"));
-		state = DSEP_HEATING;
+		state = DSEP_WAITHOMING;
+	}
+	break;
+
+	case DSEP_WAITHOMING:
+	{
+		if ((planner.has_blocks_queued() == false) && (queue.length == 0))
+		{
+			SERIAL_ECHOLNPGM("heating");
+			state = DSEP_HEATING;
+		}
 	}
 	break;
 
 	case DSEP_HEATING:
 	{
-		SERIAL_ECHO("heat");
 		HOTEND_LOOP()
 		{
 			thermalManager.setTargetHotend(recovery.info.target_temperature[e], e);
@@ -95,46 +109,117 @@ void DGUS_Screen_ResumePrinting::Update()
 #if HAS_HEATED_BED
 		thermalManager.setTargetBed(recovery.info.target_temperature_bed);
 #endif
-
+		SERIAL_ECHOLNPGM("waitheating");
 		state = DSEP_WAITHEATING;
 	}
 	break;
 
 	case DSEP_WAITHEATING:
 	{
-		if ((thermalManager.degHotend(0) >= thermalManager.degTargetHotend(0) - 2) &&
-			(thermalManager.degHotend(0) <= thermalManager.degTargetHotend(0) + 2) &&
-			(thermalManager.degHotend(0) > 180))
+		if (recovery.info.dual_mode == 0)
 		{
-			SERIAL_ECHO("gohome");
-			state = DSEP_GOHOME;
+			if ((thermalManager.degHotend(recovery.info.active_extruder) >= thermalManager.degTargetHotend(recovery.info.active_extruder) - 2) &&
+				(thermalManager.degHotend(recovery.info.active_extruder) <= thermalManager.degTargetHotend(recovery.info.active_extruder) + 2) &&
+				(thermalManager.degHotend(recovery.info.active_extruder) > 180))
+			{
+				SERIAL_ECHOLNPGM("extruding");
+				state = DSEP_EXTRUDING;
+			}
+		}
+		else
+		{
+			if ((thermalManager.degHotend(0) >= thermalManager.degTargetHotend(0) - 2) &&
+				(thermalManager.degHotend(0) <= thermalManager.degTargetHotend(0) + 2) &&
+				(thermalManager.degHotend(0) > 180) &&
+				(thermalManager.degHotend(1) >= thermalManager.degTargetHotend(1) - 2) &&
+				(thermalManager.degHotend(1) <= thermalManager.degTargetHotend(1) + 2) &&
+				(thermalManager.degHotend(1) > 180))
+			{
+				SERIAL_ECHOLNPGM("extruding");
+				state = DSEP_EXTRUDING;
+			}
 		}
 	}
 	break;
 
-	case DSEP_GOHOME:
+	case DSEP_EXTRUDING:
 	{
-		destination = current_position;
-		destination.e += 20 / planner.e_factor[active_extruder];
-		planner.buffer_line(destination, 3, active_extruder);
-		current_position = destination;
+		if (recovery.info.dual_mode == 0)
+		{
+			destination = current_position;
+			destination.e += 20 / planner.e_factor[active_extruder];
+			planner.buffer_line(destination, 3, active_extruder);
+			current_position = destination;
+		}
+		else
+		{
+			destination = current_position;
+			destination.e += 20 / planner.e_factor[0];
+			planner.buffer_line(destination, 3, 0);
+			current_position = destination;
 
-		state = DSEP_WAITGOHOME;
+			destination = current_position;
+			destination.e += 20 / planner.e_factor[1];
+			planner.buffer_line(destination, 3, 1);
+			current_position = destination;
+		}
+		state = DSEP_WAITEXTRUDING;
 	}
 	break;
 
-	case DSEP_WAITGOHOME:
+	case DSEP_WAITEXTRUDING:
 	{
 		if ((planner.has_blocks_queued() == false) && (queue.length == 0))
 		{
-			SERIAL_ECHO("SETPOS");
-			state = DSEP_SETPOS;
+			SERIAL_ECHOLNPGM("set dual mode");
+			state = DSEP_DUALMODE;
 		}
 	}
 	break;
 
-	case DSEP_SETPOS:
+	case DSEP_DUALMODE:
 	{
+		// Restore the dual mode
+		if (recovery.info.dual_mode == 0)
+		{
+            queue.enqueue_now_P("M605 S1");
+		}
+		else if (recovery.info.dual_mode == 1)
+		{
+			// move_center();
+            queue.enqueue_now_P("M605 S2");
+            queue.enqueue_now_P("G28 X R0");
+		}
+		else
+		{
+			// move_center();
+			queue.enqueue_now_P("M605 S2");
+			queue.enqueue_now_P("M605 S3");
+            queue.enqueue_now_P("G28 X R0");
+		}
+		wtvar_dual_mode = recovery.info.dual_mode;
+
+		#if HAS_HOME_OFFSET
+			home_offset = recovery.info.home_offset;
+		#endif
+
+		state = DSEP_WAITMODE;
+	}
+	break;
+
+	case DSEP_WAITMODE:
+	{
+		if ((planner.has_blocks_queued() == false) && (queue.length == 0))
+		{
+			SERIAL_ECHOLNPGM("restore xy");
+			state = DSEP_RESTOREPOSITION;
+		}
+	}
+	break;
+
+	case DSEP_RESTOREPOSITION:
+	{
+
 		// Move back to the saved XY
 		sprintf_P(headgcode, PSTR("G1 X%s Y%s F3000"),
 				  dtostrf(recovery.info.current_position.x, 1, 3, str_1),
@@ -148,47 +233,62 @@ void DGUS_Screen_ResumePrinting::Update()
         sprintf_P(headgcode, PSTR("M420 S%i Z%s"), int(recovery.info.leveling), dtostrf(recovery.info.fade, 1, 1, str_1));
         queue.enqueue_one_now(headgcode);
 
+		state = DSEP_WAITPOSITION;
+	}
+	break;
+
+	case DSEP_WAITPOSITION:
+	{
+		if ((planner.has_blocks_queued() == false) && (queue.length == 0))
+		{
+			SERIAL_ECHOLNPGM("restore z");
+			state = DSEP_RESTOREZ;
+		}
+	}
+	break;
+	
+
+	case DSEP_RESTOREZ:
+	{
 		// Move back to the saved Z
 		dtostrf(recovery.info.current_position.z, 1, 3, str_1);
 #if Z_HOME_DIR > 0
 		sprintf_P(headgcode, PSTR("G1 Z%s F500"), str_1);
 #else
-        // queue.enqueue_one_P("G1 Z0 F500");
+		// queue.enqueue_one_P("G1 Z0 F500");
 		sprintf_P(headgcode, PSTR("G92.9 Z%s"), str_1);
 #endif
-        queue.enqueue_one_now(headgcode);
+		queue.enqueue_one_now(headgcode);
 
 		// Restore the feedrate
 		sprintf_P(headgcode, PSTR("G1 F%d"), recovery.info.feedrate);
-        queue.enqueue_one_now(headgcode);
+		queue.enqueue_one_now(headgcode);
 
 		// Restore E position with G92.9
 		sprintf_P(headgcode, PSTR("G92.9 E%s"), dtostrf(recovery.info.current_position.e, 1, 3, str_1));
-        queue.enqueue_one_now(headgcode);
+		queue.enqueue_one_now(headgcode);
 
 		// Relative axis modes
 		gcode.axis_relative = recovery.info.axis_relative;
 
-		state = DSEP_WAITBUFFER;
+		
+		#if HAS_POSITION_SHIFT
+			position_shift = recovery.info.position_shift;
+		#endif
+		#if HAS_HOME_OFFSET || HAS_POSITION_SHIFT
+			LOOP_XYZ(i) update_workspace_offset((AxisEnum)i);
+		#endif
+
+		state = DSEP_WAITZ;
 	}
 	break;
 
-	case DSEP_WAITSETPOS:
-	{
-		if ((planner.has_blocks_queued() == false) && (queue.length == 0))
-		{
-
-			state = DSEP_WAITBUFFER;
-		}
-	}
-	break;
-
-	case DSEP_WAITBUFFER:
+	case DSEP_WAITZ:
 	{
 		if ((planner.has_blocks_queued() == false) && (queue.length == 0))
 		{
 			state = DSEP_OPENFILE;
-			SERIAL_ECHO("openfile");
+			SERIAL_ECHOLNPGM("openfile");
 		}
 	}
 	break;
@@ -204,18 +304,11 @@ void DGUS_Screen_ResumePrinting::Update()
         if (gcodeinfo.info.b_image)
             gcodeinfo.load_jpg(gcodeinfo.info.filename);
 
-        // // 保存的是gbk编码，首先要转成utf8
-        // unsigned char utf8String[UNICODE_FILENAME_LENGTH];
-        // ZERO(utf8String);
-        // int _len = 0;
-		// SwithToUtf_8((const unsigned char*)gcodeinfo.info.filename, strlen(gcodeinfo.info.filename) + 1, utf8String, &_len);
-        
 		card.selectFileByName(fn);
 
 		char filename_buffer[UNICODE_FILENAME_LENGTH];
 		ZERO(filename_buffer);
 
-		// 显示unicode编码文件名
 		uint16_t _len = strlen(card.longFilename) * 2;
         if (_len > 0)
         {
@@ -223,7 +316,6 @@ void DGUS_Screen_ResumePrinting::Update()
         }
         else
         {
-            // 短文件名转为unicode字符串
             _len = strlen(card.filename) * 2;
             ZERO(filename_buffer);
             Utf8ToUnicode(card.filename, filename_buffer);
@@ -336,6 +428,19 @@ void DGUS_Screen_ResumePrinting::ShowRecoveryInfo()
         #if HAS_LEVELING
           SERIAL_ECHOLNPAIR("leveling: ", int(recovery.info.leveling), "\n fade: ", int(recovery.info.fade));
         #endif
+
+		if (recovery.info.dual_mode == 0)
+		{
+            SERIAL_ECHOLNPGM("Dual mode: normal");
+		}
+		else if (recovery.info.dual_mode == 1)
+		{
+			SERIAL_ECHOLNPGM("Dual mode: copy");
+		}
+		else
+		{
+			SERIAL_ECHOLNPGM("Dual mode: mirror");
+		}
 
         SERIAL_ECHOLNPAIR("sd_filename: ", recovery.info.sd_filename);
         SERIAL_ECHOLNPAIR("sdpos: ", recovery.info.sdpos);

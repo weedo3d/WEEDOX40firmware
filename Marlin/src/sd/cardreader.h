@@ -174,7 +174,7 @@ public:
 
   static Sd2Card& getSd2Card() { return sd2card; }
 
-  // 返回正在打印的文件 add by perron
+  // add by perron
   static void getPrintingFilename(char* filename);
 
   // perron

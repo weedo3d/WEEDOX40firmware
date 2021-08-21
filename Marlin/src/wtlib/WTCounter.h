@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* 空闲计时器
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #ifndef WTCOUNTER_H
@@ -12,7 +8,6 @@
 #include "../core/macros.h"
 #include "../libs/stopwatch.h"
 
-// 打印中参数设置菜单 
 class WTCounter
 {
 public:

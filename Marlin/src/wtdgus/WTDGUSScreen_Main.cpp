@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "../MarlinCore.h"
@@ -23,7 +19,7 @@ extern char ipAddress[16];
 extern uint8_t esp32_signal;
 
 #ifdef DGUS_LCD
-// 主菜单 
+
 void DGUS_Screen_Main::Init()
 {
 	dserial.LoadScreen(SCREEN_MAIN);
@@ -73,10 +69,6 @@ void DGUS_Screen_Main::Update()
 		checkcount = -1;
 	}
 
-	//if (eeprom_read_byte(EEPROM_SAVED_SAVEFLAG) == 0x5A)
-	//{
-	//	dgus.GotoResumePrintingMenu();
-	//}
 }
 
 void DGUS_Screen_Main::KeyProcess()
@@ -87,27 +79,27 @@ void DGUS_Screen_Main::KeyProcess()
 		{
 			gltouchpara.validflg = false;
 			if (gltouchpara.value == KEY_MAIN_BUTTON1)
-			{	// 打印磁盘菜单
+			{	
 				if (wt_onlineprinting == SPARK_LOST)
 					dgus.GotoSDMenu();
 				else
 					PrintChoice();
 			}
 			else if (gltouchpara.value == KEY_MAIN_BUTTON2)
-			{	// 准备菜单
+			{	
 				dgus.GotoPrepareMenu();
 			}
 			else if (gltouchpara.value == KEY_MAIN_BUTTON3)
-			{	// 设置菜单
+			{	
 				dgus.GotoControlMenu();
 			}
 			else if (gltouchpara.value == KEY_MAIN_BUTTON4)
-			{	// 帮助菜单
+			{	
 				dgus.GotoHelpMenu();
 			}
 		}
 		else if (gltouchpara.address == ADDR_2OPTION_KEY)
-		{	// 打印磁盘菜单
+		{	
 			gltouchpara.validflg = false;
 			if (gltouchpara.value == KEY_2OPTION_BUTTON_RETURN)
 			{

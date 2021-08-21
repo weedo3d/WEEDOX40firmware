@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #ifndef WTDUGSSCREEN_PRINTING_SETTING_H
@@ -12,7 +8,6 @@
 #include "../WTDGUSScreenBase.h"
 #include "../WTDGUSConfig.h"
 
-// 打印中参数设置菜单 
 class DGUS_Screen_PrintingSetting : public DGUS_Screen_Base
 {
 public:

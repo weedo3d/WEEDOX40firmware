@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "../../MarlinCore.h"
@@ -34,7 +30,6 @@ void DGUS_Screen_ZOffset::manage_manual_move()
 	}
 }
 
-// 自动调平菜单 
 void DGUS_Screen_ZOffset::Init()
 {
 	dgus.ShowMovingMessage();
@@ -95,7 +90,6 @@ void DGUS_Screen_ZOffset::KeyProcess()
 			{
 				probe.offset.z = zoffset_current;
 				(void)settings.save();
-				// queue.enqueue_one_now(PSTR("G28"));
 				queue.enqueue_one_now("G1 Z200 F2000");
 				Goback();
 

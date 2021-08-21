@@ -33,7 +33,8 @@
 
 extern uint8_t wtvar_tune_x1;
 extern uint8_t wtvar_tune_x2;
-extern uint8_t wtvar_tune_y;
+extern uint8_t wtvar_tune_y1;
+extern uint8_t wtvar_tune_y2;
 
 /**
  * M218 - set hotend offset (in linear units)
@@ -75,13 +76,17 @@ void GcodeSuite::M218() {
       // perron 200824
       if (target_extruder == 1)
       {
-        wtvar_tune_y = (uint8_t)((float)hotend_offset[1].y * 10 + 5.5);
-        if (wtvar_tune_y > 10) wtvar_tune_y -= 10;
+        wtvar_tune_y1 = (uint8_t)(hotend_offset[1].y + 3.4);
 
-        if (wtvar_tune_y > 10) wtvar_tune_y = 10;
-        if (wtvar_tune_y < 1) wtvar_tune_y = 1;
+        if (wtvar_tune_y1 > 5) wtvar_tune_y1 = 5;
+        if (wtvar_tune_y1 <1) wtvar_tune_y1 = 1;
 
-        hotend_offset[1].y = ((float)wtvar_tune_y - 5) / 10;
+        wtvar_tune_y2 = (uint8_t)(((float)((float)hotend_offset[1].y - (int)(hotend_offset[1].y + 0.5))) * 10 + 5.5);
+        if (wtvar_tune_y2 > 10) wtvar_tune_y2 -= 10;
+        if (wtvar_tune_y2 > 10) wtvar_tune_y2 = 10;
+        if (wtvar_tune_y2 < 1) wtvar_tune_y2 = 1;
+
+        hotend_offset[1].y = (wtvar_tune_y1 - 3) + ((float)wtvar_tune_y2 - 5) / 10;
       }
   }
 

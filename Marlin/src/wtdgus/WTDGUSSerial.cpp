@@ -1,10 +1,7 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
-/*
-* DGus 串口对象
-*/
 
 #include "../MarlinCore.h"
 #include "WTDGUSSerial.h"
@@ -156,34 +153,6 @@ void DGUSSerial::SendEmptyUnicodeString(uint16_t addr, uint16_t total_length)
 	}
 	payload_send();
 }
-
-// void DGUSSerial::SendString_P(uint16_t addr, const char* str)
-// {
-// 	payload_reset();
-// 	payload_append_byte(DGUS_CMD_WriteVAR);
-// 	payload_append_int(addr);
-// 	while (byte ch = pgm_read_byte(str++)) payload_append_byte(ch);
-// 	payload_send();
-// }
-
-// void DGUSSerial::SendString_P(uint16_t addr, const char* str, uint8_t total_length)
-// {
-// 	payload_reset();
-// 	payload_append_byte(DGUS_CMD_WriteVAR);
-// 	payload_append_int(addr);
-// 	uint8_t count = 0;
-// 	while (byte ch = pgm_read_byte(str++))
-// 	{
-// 		payload_append_byte(ch);
-// 		count++;
-// 	}
-// 	while (count < total_length)
-// 	{
-// 		payload_append_byte(0x20);
-// 		count ++;
-// 	}
-// 	payload_send();
-// }
 
 void DGUSSerial::SendString(uint16_t addr, int data, int length)
 {
@@ -418,21 +387,18 @@ void DGUSSerial::SendBuffer(uint16_t addr, const uint8_t* buffer, uint8_t total_
 	payload_send();
 }
 
-// 复位jpg缓冲区
 void DGUSSerial::JPG_Reset()
 {
 	jpg_addr = DGUS_JPG_CACHE_ADDR;
 	jpg_available = false;
 }
 
-// 发送jpg至缓冲区
 void DGUSSerial::JPG_Send(const uint8_t* str, uint8_t str_len)
 {
 	SendBuffer(jpg_addr, str, str_len);
 	jpg_addr += str_len / 2;
 }
 
-// 将缓冲区图像显示在屏幕上
 void DGUSSerial::JPG_Show()
 {
 	uint8_t param[] = { 0x5a, 0x01, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00 };

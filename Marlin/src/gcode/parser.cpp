@@ -262,7 +262,7 @@ void GCodeParser::parse(char *p) {
     default: break;
   }
 
-  // add by perron
+  // perron
   if (letter == 'W') switch (codenum) {
     case 205: case 206: case 207: case 208: case 218: case 220: case 223:  
     case 305: case 307: case 316:

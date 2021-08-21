@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #ifndef WTDUGSSCREEN_RESUMEPRINTING_H
@@ -12,7 +8,6 @@
 #include "../WTDGUSScreenBase.h"
 #include "../WTDGUSConfig.h"
 
-// 恢复打印菜单 
 class DGUS_Screen_ResumePrinting : public DGUS_Screen_Base
 {
 public:
@@ -26,20 +21,22 @@ private:
 	enum DSEP_ENUM
 	{
 		DSEP_NOTHING = 0,
-		DSEP_FOUNDFILE = 1,
-		DSEP_WAITUSER = 2,
-		DSEP_START = 3,
-		DSEP_HEATING = 4,
-		DSEP_WAITHEATING = 5,
-		DSEP_GOHOME = 6,
-		DSEP_WAITGOHOME = 7,
-		DSEP_SETPOS = 8,
-		DSEP_WAITSETPOS = 9,
-		DSEP_WAITBUFFER = 10,
-		DSEP_OPENFILE = 11,
-		DSEP_COMPLETE = 12,
-		DSEP_PREHEAT = 13,
-		DSEP_WAITPREHEAT = 14
+		DSEP_PREHEAT,
+		DSEP_WAITPREHEAT,
+		DSEP_HOMING,
+		DSEP_WAITHOMING,
+		DSEP_HEATING,
+		DSEP_WAITHEATING,
+		DSEP_EXTRUDING,
+		DSEP_WAITEXTRUDING,
+		DSEP_DUALMODE,
+		DSEP_WAITMODE,
+		DSEP_RESTOREPOSITION,
+		DSEP_WAITPOSITION,
+		DSEP_RESTOREZ,
+		DSEP_WAITZ,
+		DSEP_OPENFILE,
+		DSEP_COMPLETE
 	};
 
 	DSEP_ENUM state;

@@ -345,14 +345,6 @@ void CardReader::printFilename() {
     char dosFilename[FILENAME_LENGTH];
     file.getDosName(dosFilename);
     SERIAL_ECHO(dosFilename);
-    // perron, W201发送文件名时，不支持长文件名
-    // #if ENABLED(LONG_FILENAME_HOST_SUPPORT)
-    //   selectFileByName(dosFilename);
-    //   if (longFilename[0]) {
-    //     SERIAL_ECHO(' ');
-    //     SERIAL_ECHO(longFilename);
-    //   }
-    // #endif
   }
   else
     SERIAL_ECHOPGM("no_file");
@@ -395,7 +387,7 @@ void CardReader::openAndPrintFile(const char *name) {
   char cmd[4 + strlen(name) + 1]; // Room for "M23 ", filename, and null
   extern const char M23_STR[];
   sprintf_P(cmd, M23_STR, name);
-  // perron, 201019, 修正部分中文名文件被误修改为小写后无法打印的问题
+  // perron, 201019
 //   for (char *c = &cmd[4]; *c; c++) *c = tolower(*c);
   queue.enqueue_one_now(cmd);
   queue.enqueue_now_P(M24_STR);
@@ -1250,7 +1242,7 @@ void CardReader::fileHasFinished() {
 
 #endif // POWER_LOSS_RECOVERY
 
-// 返回正在打印的文件 add by perron
+// add by perron
 void CardReader::getPrintingFilename(char* filename)
 {
 	if (file.isOpen()) 
@@ -1277,7 +1269,7 @@ void CardReader::lsRoot(OutPacket* outp)
 
                 outp->Reset();
                 uint8_t* p2 = outp->payload;
-                sprintf_P((char*)p2, PSTR("LN:%s S:%ld"), filename, p.fileSize);		// 发送一条文件信息
+                sprintf_P((char*)p2, PSTR("LN:%s S:%ld"), filename, p.fileSize);		
                 outp->Send();
 
                 //safe_delay(5);
@@ -1291,7 +1283,7 @@ void CardReader::lsRoot(OutPacket* outp)
 	outp->Reset();
 	outp->appendByte(0x42);
 	outp->appendByte(0x31);
-	outp->Send();		// 发送文件列表结束
+	outp->Send();		
 }
 
 #endif // SDSUPPORT

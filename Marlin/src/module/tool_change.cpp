@@ -44,6 +44,10 @@ toolchange_settings_t toolchange_settings; // Initialized by settings.load()
 #include "../feature/pause.h"
 #endif
 
+#if HAS_FILAMENT_SENSOR
+#include "../feature/runout.h"
+#endif
+
 inline void _line_to_current(const AxisEnum fr_axis, const float fscale = 1)
 {
     line_to_current_position(planner.settings.max_feedrate_mm_s[fr_axis] * fscale);
@@ -133,13 +137,13 @@ inline void dualx_tool_change(const uint8_t new_tool, bool &no_move)
  * Perform a tool-change, which may result in moving the
  * previous tool out of the way and the new tool into place.
  */
-// new_tool 要切换到的喷头
-// no_move 切换后新的喷头不移动到原喷头位置
 void tool_change(const uint8_t new_tool, bool no_move /*=false*/)
 {
-
-    // 等待前面的指令执行完成
     planner.synchronize();
+
+    #if HAS_FILAMENT_SENSOR
+    runout.enabled = false;
+    #endif
 
 #if ENABLED(DUAL_X_CARRIAGE) // Only T0 allowed if the Printer is in DXC_DUPLICATION_MODE or DXC_MIRRORED_MODE
     if (new_tool != 0 && dxc_is_duplicating())
@@ -158,12 +162,11 @@ void tool_change(const uint8_t new_tool, bool no_move /*=false*/)
 
     const bool idex_full_control = dual_x_carriage_mode == DXC_FULL_CONTROL_MODE;
 
-    // can_move_away: dual_x非完全控制模式, no_move为否时，切换后新的喷头可以移动到原喷头位置
     const uint8_t old_tool = active_extruder;
     const bool can_move_away = !no_move && !idex_full_control;
+    const float oldE = current_position.e;     
 
 #if ENABLED(TOOLCHANGE_FILAMENT_SWAP)
-    // 喷头可移动模式，并且退丝长度>0时，允许进行切换进退丝操作
     const bool should_swap = can_move_away && toolchange_settings.swap_length;
 #if ENABLED(PREVENT_COLD_EXTRUSION)
     const bool too_cold = !DEBUGGING(DRYRUN) && (thermalManager.targetTooColdToExtrude(old_tool) || thermalManager.targetTooColdToExtrude(new_tool));
@@ -183,7 +186,6 @@ void tool_change(const uint8_t new_tool, bool no_move /*=false*/)
         else
         {
 #if ENABLED(ADVANCED_PAUSE_FEATURE)
-            // 退丝操作，长度为 TOOLCHANGE_FIL_SWAP_LENGTH
             do_pause_e_move(-toolchange_settings.swap_length, MMM_TO_MMS(toolchange_settings.retract_speed));
 #else
             current_position.e -= toolchange_settings.swap_length / planner.e_factor[old_tool];
@@ -217,29 +219,9 @@ void tool_change(const uint8_t new_tool, bool no_move /*=false*/)
 #endif
 #endif
 
-        // 保存喷头当前位置
-        destination = current_position;
-
-        //         if (can_move_away)
-        //         {
-        //             // Do a small lift to avoid the workpiece in the move back (below)
-        //             // current_position.z += toolchange_settings.z_raise;
-        // #if HAS_SOFTWARE_ENDSTOPS
-        //             NOMORE(current_position.z, soft_endstop.max.z);
-        // #endif
-        //             fast_line_to_current(Z_AXIS);
-        // #if ENABLED(TOOLCHANGE_PARK)
-        //             current_position = toolchange_settings.change_point;
-        // #endif
-        //             planner.buffer_line(current_position, feedrate_mm_s, old_tool);
-        //             planner.synchronize();
-        //         }
-
-        // 计算喷头偏置
         xyz_pos_t diff = hotend_offset[new_tool] - hotend_offset[old_tool];
         diff.x = 0;
 
-        // 当前喷头进入停靠位，然后将活动喷头切换至新喷头
         dualx_tool_change(new_tool, no_move);
 
         // The newly-selected extruder XYZ is actually at...
@@ -255,20 +237,12 @@ void tool_change(const uint8_t new_tool, bool no_move /*=false*/)
         {
             if (should_swap && !too_cold)
             {
-                // 进丝，长度为刚才回抽长度，TOOLCHANGE_FIL_SWAP_LENGTH
                 do_pause_e_move(toolchange_settings.swap_length, MMM_TO_MMS(toolchange_settings.prime_speed));
-                // 继续进丝，长度为，TOOLCHANGE_FIL_EXTRA_PRIME
                 do_pause_e_move(toolchange_settings.extra_prime, 6);
-                // 退丝，长度为，TOOLCHANGE_FIL_RETRACT_LENGTH
                 do_pause_e_move(-TOOLCHANGE_FIL_RETRACT_LENGTH, 6);
-                // 等待进丝完成
                 planner.synchronize();
-                // 设置e的当前位置
-                // planner.set_e_position_mm((destination.e = current_position.e = current_position.e - (TOOLCHANGE_FIL_EXTRA_PRIME - TOOLCHANGE_FIL_RETRACT_LENGTH)));
-                // 等待2s，待料丝自然溢出后再进行擦除
-                // V1.1.0 中关闭
-                // safe_delay(2000);
-            }
+
+           }
 
             // Prevent a move outside physical bounds
             apply_motion_limits(destination);
@@ -276,9 +250,6 @@ void tool_change(const uint8_t new_tool, bool no_move /*=false*/)
             // Should the nozzle move back to the old position?
             if (can_move_away)
             {
-                // 进行喷头擦除
-                // T0: -45 to -30
-                // T1: 330 to 352
                 if (new_tool == 0)
                 {
                     do_blocking_move_to_x(-30, 20);
@@ -288,26 +259,34 @@ void tool_change(const uint8_t new_tool, bool no_move /*=false*/)
                     do_blocking_move_to_x(330, 20);
                 }
 
-                // 新喷头移回原位置
                 if (DEBUGGING(LEVELING))
                     DEBUG_POS("Move back", destination);
                 do_blocking_move_to(destination, planner.settings.max_feedrate_mm_s[X_AXIS]);
 
-                // do_pause_e_move(TOOLCHANGE_FIL_RETRACT_LENGTH, 6);
-                // // 等待进丝完成
-                // planner.synchronize();
-                // 设置e的当前位置
-                planner.set_e_position_mm((destination.e = current_position.e = current_position.e - TOOLCHANGE_FIL_EXTRA_PRIME - TOOLCHANGE_FIL_RETRACT_LENGTH));
+                if (!wtvar_changing_tool)
+                {
+                    planner.set_e_position_mm((destination.e = current_position.e = current_position.e - TOOLCHANGE_FIL_EXTRA_PRIME - TOOLCHANGE_FIL_RETRACT_LENGTH));
+                }
+                else
+                {
+                    planner.set_e_position_mm((destination.e = current_position.e = oldE - TOOLCHANGE_FIL_RETRACT_LENGTH));
+                    wtvar_changing_tool = false;
+                }
             }
             else if (DEBUGGING(LEVELING))
                 DEBUG_ECHOLNPGM("Move back skipped");
 
             active_extruder_parked = false;
+
         }
 
     } // (new_tool != old_tool)
 
     planner.synchronize();
+
+    #if HAS_FILAMENT_SENSOR
+    runout.enabled = wtvar_enablefilamentruncout;
+    #endif
 
     SERIAL_ECHO_START();
     SERIAL_ECHOLNPAIR(STR_ACTIVE_EXTRUDER, int(active_extruder));

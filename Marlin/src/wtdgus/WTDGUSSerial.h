@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 /*
@@ -33,8 +33,6 @@ public:
 	static void SendString(uint16_t addr, const char* str, uint8_t total_length);
 	static void SendUnicodeString(uint16_t addr, const char* str, uint16_t str_len, uint16_t total_length);
 	static void SendEmptyUnicodeString(uint16_t addr, uint16_t total_length);
-	// static void SendString_P(uint16_t addr, const char* str);
-	// static void SendString_P(uint16_t addr, const char* str, uint8_t length);
 	static void SendString(uint16_t addr, int data, int length);
 	static void SendEmptyString(uint16_t addr, uint16_t length);
 	static void SendLongString(uint16_t addr, const char* str, uint16_t length);
@@ -53,10 +51,6 @@ public:
 	static void LoadScreen(uint8_t screenID);
 	static void ResetScreen();
 
-	// static bool jpg_available;
-
-private:
-	// static uint32_t jpg_addr;
 };
 
 extern DGUSSerial dserial;

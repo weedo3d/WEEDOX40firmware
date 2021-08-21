@@ -185,9 +185,6 @@ void PrintJobRecovery::save(const bool force/*=false*/) {
     #if EXTRUDERS > 1
       info.active_extruder = active_extruder;
     #endif
-      
-      // perron
-      //info.active_extruder = wt_active_extruder;
 
     #if DISABLED(NO_VOLUMETRICS)
       info.volumetric_enabled = parser.volumetric_enabled;
@@ -235,6 +232,8 @@ void PrintJobRecovery::save(const bool force/*=false*/) {
 
     // Elapsed print job time
     info.print_job_elapsed = print_job_timer.duration();
+
+    info.dual_mode = wtvar_dual_mode;
 
     write();
   }

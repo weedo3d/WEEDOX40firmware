@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "../../MarlinCore.h"
@@ -22,7 +18,7 @@
 #include "../../wtlib/WTGcodeinfo.h"
 
 #ifdef DGUS_LCD
-// 打印机状态菜单 
+
 /// <summary>
 /// Initializes this instance.
 /// </summary>
@@ -67,7 +63,6 @@ void DGUS_Screen_Printing::Init()
 
 void DGUS_Screen_Printing::Update()
 {
-	// 当前温度
 	temp_nozzle0 = thermalManager.degHotend(0);
 	temp_nozzle1 = thermalManager.degHotend(1);
 	temp_bed =  thermalManager.degBed();
@@ -94,7 +89,6 @@ void DGUS_Screen_Printing::Update()
 	lasttemp_nozzle1 = temp_nozzle1;
 	lasttemp_bed = temp_bed;
 
-	// 打印进度
 	if (wt_onlineprinting == SPARK_IDLE || wt_onlineprinting == SPARK_LOST)
 		percent_current = card.percentDone();
 	else
@@ -114,7 +108,6 @@ void DGUS_Screen_Printing::Update()
 		percent_last = percent_current;
 	}
 
-	// 打印时间
 	ZERO(b);
 	duration_t elapsed = print_job_timer.duration();
 	bool has_days = (elapsed.value >= 60 * 60 * 24L);
@@ -159,7 +152,7 @@ void DGUS_Screen_Printing::KeyProcess()
 	if (gltouchpara.validflg)
 	{
 		if (gltouchpara.address == ADDR_PRINTING_KEY)
-		{	// 打印界面
+		{	
 			gltouchpara.validflg = false;
 			if (gltouchpara.value == KEY_PRINTING_BUTTON1)
 			{
@@ -185,7 +178,7 @@ void DGUS_Screen_Printing::KeyProcess()
 			}
 			else if (gltouchpara.value == KEY_PRINTING_BUTTON3)
 			{
-				if (wt_onlineprinting == SPARK_IDLE || wt_onlineprinting == SPARK_LOST)			// 非联机打印的时候才能显示打印设置菜单
+				if (wt_onlineprinting == SPARK_IDLE || wt_onlineprinting == SPARK_LOST)			
 					dgus.GotoPrintingSettingMenu();
 				else
 					dgus.ShowHelp(HELP_TIP23_LINE[wtvar_language]);
@@ -196,7 +189,7 @@ void DGUS_Screen_Printing::KeyProcess()
 			}
 		}
 		else if (gltouchpara.address == ADDR_2BINFO_KEY)
-		{	// 退出确认对话框
+		{	
 			gltouchpara.validflg = false;
 			if (gltouchpara.value == KEY_2BINFO_ITEM1)
 			{	// cancel
@@ -217,7 +210,7 @@ void DGUS_Screen_Printing::KeyProcess()
 		{
 			gltouchpara.validflg = false;
 			if (gltouchpara.value == KEY_HELP1_BUTTON_RETURN)
-			{	// 返回打印界面
+			{	
 				dserial.LoadScreen(SCREEN_PRINTING);
 
                 if (dserial.JPG_Available())

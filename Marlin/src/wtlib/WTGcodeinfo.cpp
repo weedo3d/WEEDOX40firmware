@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "../MarlinCore.h"
@@ -64,11 +64,10 @@ void WTGcodeinfo::parse(char* filename)
 		card_eof = card.eof();
 
 		if (card_eof || n == -1 || sd_char == '\r')
-		{	// 一行读取结束
+		{	
 
 			linebuffer[sd_count] = '\0';
 
-			// 解析行信息
 			if (sd_comment_mode)
 			{
 				if (startsWith(linebuffer, "MachineType:"))
@@ -156,16 +155,16 @@ void WTGcodeinfo::parse(char* filename)
 			else
 			{	
 				if (startsWith(linebuffer, "W220"))
-				{	// 图片数据
+				{	
 					info.b_image = true;
 					info.i_line++;
 				}
 				else if (startsWith(linebuffer, "W221"))
-                {   // 图片数据开始
+                {
                     linemax = PIC_MAX_LINE;
                 }
                 else if (startsWith(linebuffer, "W222"))
-                {   // 图片数据结束
+                {  
                     linemax = linecount + NOPIC_MAX_LINE;
                 }
 			}
@@ -177,13 +176,13 @@ void WTGcodeinfo::parse(char* filename)
 			
 		}
 		else if (sd_count >= MAX_COMMENT_LINE_LENGTH - 1) 
-		{	// 行超长
+		{	
 			SERIAL_ECHOLNPGM("Error: comment line too long");
 			card.closefile();
 			return;
 		}
 		else 
-		{	// 读取字符 
+		{	
 			if (sd_char == ';')
 				sd_comment_mode = true;
 			else if (sd_char != '\n')
@@ -195,7 +194,6 @@ void WTGcodeinfo::parse(char* filename)
 
 }
 
-// 发送图片
 void WTGcodeinfo::load_jpg(char* filename)
 {
 	if (!info.b_image || info.i_line == 0) return;
@@ -215,7 +213,7 @@ void WTGcodeinfo::load_jpg(char* filename)
 		card_eof = card.eof();
 
 		if (card_eof || n == -1 || sd_char == '\r')
-		{	// 一行读取结束
+		{	
 
 			linebuffer[sd_count] = '\0';
 
@@ -231,7 +229,7 @@ void WTGcodeinfo::load_jpg(char* filename)
 					break;
 				}
 				else if (startsWith(linebuffer, "W220") && sd_count > 6)
-				{	// 图片数据
+				{	
 					send_jpg_line(&linebuffer[5]);
 				}
 			}
@@ -243,12 +241,10 @@ void WTGcodeinfo::load_jpg(char* filename)
 			
 		}
 		else if (sd_count >= MAX_COMMENT_LINE_LENGTH - 1) 
-		{	// 行超长
-			// SERIAL_ECHOLNPGM("Error: comment line too long");
-			// return;
+		{	
 		}
 		else 
-		{	// 读取字符 
+		{	
 			if (sd_char == ';')
 				sd_comment_mode = true;
 			else if (sd_char != '\n')
@@ -259,7 +255,6 @@ void WTGcodeinfo::load_jpg(char* filename)
 	card.closefile();
 }
 
-// 解析行中的字符串
 void WTGcodeinfo::getvalue(char* data)
 {
 	uint8_t pos = 0;
@@ -276,7 +271,6 @@ void WTGcodeinfo::getvalue(char* data)
 	}
 }
 
-// 发送一行jpg数据
 void WTGcodeinfo::send_jpg_line(const char* data)
 {
 	ZERO(jpgbuffer);

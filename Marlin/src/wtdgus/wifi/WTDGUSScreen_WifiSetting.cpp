@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "../../MarlinCore.h"
@@ -20,7 +16,7 @@ extern char ipAddress[16];
 extern char esp32_version[8];
 
 #ifdef DGUS_LCD
-// 网络设置菜单 
+
 void DGUS_Screen_WifiSetting::Init()
 {
 	dserial.LoadScreen(SCREEN_HELPMENU);

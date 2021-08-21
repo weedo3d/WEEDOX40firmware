@@ -1,10 +1,7 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
-/*
-* ¿ÕÏÐ¼ÆÊ±Æ÷
-*/
 
 #include "WTCounter.h"
 #include "../MarlinCore.h"
@@ -45,7 +42,6 @@ bool WTCounter::start()
 {
 	if (!isRunning()) 
 	{
-		//SERIAL_ECHOLNPGM("idle counter start");
 
 		if (isPaused()) 
 			accumulator = duration();
@@ -67,8 +63,6 @@ bool WTCounter::stop()
 {
 	if (isRunning() || isPaused()) 
 	{
-		//SERIAL_ECHOLNPGM("idle counter stop");
-
 		state = STOPPED;
 		stopTimestamp = millis();
 		mTime += deltaDuration();

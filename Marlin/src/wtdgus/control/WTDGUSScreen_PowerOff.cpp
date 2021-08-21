@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "../../MarlinCore.h"
@@ -17,7 +13,7 @@
 #include "../WTDGUSManager.h"
 
 #ifdef DGUS_LCD
-// 自动关机菜单
+
 void DGUS_Screen_PowerOff::Init()
 {
 	dserial.LoadScreen(SCREEN_POWER_OFF);

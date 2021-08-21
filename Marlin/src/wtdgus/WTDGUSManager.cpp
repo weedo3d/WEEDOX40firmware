@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include <stdarg.h>
@@ -50,7 +50,6 @@ void DGUSManager::Update()
 		// SERIAL_ECHOLNPGM("screen update");
 	}
 
-	// 刷新sdcard状态
 	const uint8_t sd_status = (uint8_t)IS_SD_INSERTED();
 	if (sd_status != lcd_sd_status)
 	{
@@ -59,9 +58,9 @@ void DGUSManager::Update()
 		if (sd_status == 1) 
 		{
 			SERIAL_ECHOLNPGM("sd insert");
-			safe_delay(1000);		// 等待tf卡完全插入
+			safe_delay(1000);		
 			card.mount();
-			screenSDCard->NeedUpdate = true;	// 通知SD卡界面更新文件列表
+			screenSDCard->NeedUpdate = true;	
 		}
 		else 
 		{
@@ -79,7 +78,6 @@ void DGUSManager::process()
 	if (dserial.available() < 9)	
 		return;
 
-	// 接收DGUS发送数据
 	while (dserial.available() > 0)
 	{
 		b = (uint8_t)dserial.read();
@@ -142,7 +140,6 @@ void DGUSManager::process()
 	}
 }
 
-// 实例化所有窗口对象
 void DGUSManager::InitMenu()
 {
 	screenMain = new DGUS_Screen_Main();
@@ -183,6 +180,8 @@ void DGUSManager::InitMenu()
 	screenWifiInfo = new DGUS_Screen_WifiInfo();
 	screenWifiDisk = new DGUS_Screen_WifiDisk();
 	screenIAP = new DGUS_Screen_IAP();
+	screenBabystep = new DGUS_Screen_Babystep();
+	screenSwitch = new DGUS_Screen_Switch();
 
     #if ENABLED(DUAL_X_CARRIAGE)
     screenFitness = new DGUS_Screen_Fitness();
@@ -225,6 +224,8 @@ void DGUSManager::InitMenu()
 	screenLanguage->SetParent(dgus.screenMain);
 	screenErrorDiag->SetParent(screenHelp);
 	screenPreview->SetParent(screenSDCard);
+	screenBabystep->SetParent(screenPrintingSetting);
+	screenSwitch->SetParent(screenPrintingSetting);
 
 	screenCurrent = dgus.screenMain;
 }
@@ -364,20 +365,17 @@ void DGUSManager::NozzleTempError(void)
 {
 	thermalManager.disable_all_heaters();
 	screenSelftest->NozzleTempError();
-	//screenErrorDiag->NozzleTempError();
 }
 
 void DGUSManager::BedTempError(void)
 {
 	thermalManager.disable_all_heaters();
 	screenSelftest->BedTempError();
-	//screenErrorDiag->BedTempError();
 }
 
 void DGUSManager::EndStopError(void)
 {
 	screenSelftest->EndStopError();
-	//screenErrorDiag->EndStopError();
 }
 
 void DGUSManager::ShowHelp(const char* text)
@@ -412,10 +410,6 @@ void DGUSManager::ShowLog(const char* message)
 	{
 		screenLog->AddLine(message);
 	}
-	// else if (screenLevelbed->activated)
-	// {
-	// 	screenLevelbed->AddLine(message);
-	// }
 }
 
 void DGUSManager::ShowLogPair(const char *format, ...)
@@ -433,10 +427,6 @@ void DGUSManager::ShowLogPair(const char *format, ...)
 	{
 		screenLog->AddLine(buffer);
 	}
-	// else if (screenLevelbed->activated)
-	// {
-	// 	screenLevelbed->AddLine(buffer);
-	// }
 }
 
 void DGUSManager::ShowLogMenu(DGUS_Screen_Base* parent, const char* title)

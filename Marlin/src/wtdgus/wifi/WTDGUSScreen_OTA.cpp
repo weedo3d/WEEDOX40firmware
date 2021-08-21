@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "../../MarlinCore.h"
@@ -16,7 +12,7 @@
 extern char esp32_message[22];
 
 #ifdef DGUS_LCD
-// 主菜单 
+
 void DGUS_Screen_OTA::Init()
 {
 	dgus.LoadMessageReturnMenu(this);

@@ -1,10 +1,8 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 /**
-* 多国语言字符定义
-* 数组中元素对应语言如下：
 * Multi-language character definition
 * The corresponding language of the elements in the array is as follows:
 *
@@ -2505,14 +2503,14 @@ const char MMSG_NOZZLE_OFFSET_TITLE[8][38] PROGMEM = {
 };
 
 const char MMSG_NOZZLE_X_OFFSET[8][20] PROGMEM = {
-	"   X偏置粗调",
- 	" X Coarse Tune",
-	"Xオフセット粗調整",
-	"X Melodía Gruesa",
-    " X gros morceau",
-    "X Grobabstimmung",
-    "X Coarse Tune",
-    "X Grove Afstelling"
+	"  XY偏置粗调",
+ 	" XY Coarse Tune",
+	"XYオフセット粗調整",
+	"XY Melodía Gruesa",
+    "XY gros morceau",
+    "XY Grobabstimmung",
+    "XY Coarse Tune",
+    "XY Grove Afstelling"
 };
 
 const char MMSG_NOZZLE_XY_OFFSET[8][20] PROGMEM = {
@@ -2538,25 +2536,25 @@ const char MMSG_NOZZLE_Z_OFFSET[8][20] PROGMEM = {
 };
 
 const char MMSG_NOZZLE_X_TITLE[8][55] PROGMEM = {
-	"喷头X偏置粗调",
- 	"Nozzle X Offset Coarse Tune",
-	"ノズルXオフセット粗調整",
-	"Boquilla X Offset Coarse Tune",
-    "Réglage grossier décalé de la buse X",
-    "Düsen X-Versatz (Offset) Grobeinstellung",
-    "Regolazione approssimativa dell'offset dell'ugello X.",
-    "Printkop X Afstand"
+	"喷头XY偏置粗调",
+ 	"Nozzle XY Offset Coarse Tune",
+	"ノズルXYオフセット粗調整",
+	"Boquilla XY Offset Coarse Tune",
+    "Réglage grossier décalé de la buse XY",
+    "Düsen XY-Versatz (Offset) Grobeinstellung",
+    "Regolazione approssimativa dell'offset dell'ugello XY.",
+    "Printkop XY Afstand"
 };
 
 const char MMSG_NOZZLE_X_TEXT[8][190] PROGMEM = {
-	"打印文件NozzleCoarseTune.gcode\r\n选择上下两层偏差最小的测试块上的数字, 然后点击保存.",
-	"Print the file NozzleCoarseTune.gcode\r\nSelect the number on the block with the smallest deviation between the upper and lower layers, and Save.",
- 	"ファイルNozzleCoarseTune.gcodeを印刷します\r\n上層と下層の偏差が最も小さいテストブロックの番号を選択し, [保存]をクリックします.",
-	"Imprima el archivo Nozzle CourseTune.gcode. Seleccione el número en el bloque con la desviación más pequena entre las capas superior e inferior.",
-    "Imprimez le fichier NozzleCoarseTune.gcode\r\nSélectionnez le numéro sur le bloc avec le plus petit écart entre les couches supérieure et inférieure, et enregistrez.",
-    "Drucken Sie die Datei NozzleCoarseTune.gcode\r\nWahlen Sie anschliebend die Nummer des Blocks mit der geringsten Abweichung zwischen den oberen und unteren Schichten und speichern Sie.",
-    "Stampa il file NozzleCoarseTune.gcode\r\nSeleziona il numero sul blocco con la deviazione più piccola tra i livelli superiore e inferiore e Salva.",
-    "Print het bestand NozzleCoarseTune.gcode.\r\nSelecteer het nummer van het blokje met de kleinste afwijking tussen de bovenste en onderste lagen en kies Opslaan."
+	"打印文件NozzleCoarseTune.gcode\r\n选择水平方向两层偏差最小的测试块上的数字, 点击下一步.",
+	"Print the file NozzleCoarseTune.gcode\r\nSelect the number on the block with the smallest horizontal deviation, and click Next.",
+ 	"ファイルNozzleCoarseTune.gcodeファイルを印刷します\r\n2つのレイヤーの水平方向の偏差が最も小さいテストブロックの番号を選択し,[次へ]をクリックします.",
+	"Imprima el archivo Nozzle CourseTune.gcode. Seleccione el número en el bloque con la desviación horizontal más pequena y haga clic en Siguiente.",
+    "Imprimez le fichier NozzleCoarseTune.gcode\r\nSélectionnez le numéro sur le bloc avec le plus petit écart horizontal et cliquez sur Suivant.",
+    "Drucken Sie die Datei NozzleCoarseTune.gcode\r\nWahlen Sie anschliebend die Nummer des Blocks mit der geringsten horizontalen Abweichung und klicken Sie auf Fortfahren.",
+    "Stampa il file NozzleCoarseTune.gcode\r\nSelezionare il numero sul blocco con la deviazione orizzontale più piccola e fare clic su Avanti.",
+    "Print het bestand NozzleCoarseTune.gcode.\r\nSelecteer het nummer van het blokje met de kleinste horizontale afwijking en klik op Volgende."
 };
 
 const char MMSG_NOZZLE_XY_TITLE[8][46] PROGMEM = {
@@ -2691,5 +2689,70 @@ const char MMSG_MAINMENU[8][14] PROGMEM = {
     "Hoofdmenu"
 };
 
+const char MMSG_SETTING_BABYSTEP[8][30]  = {
+	"    微调Z轴",
+	"  Babystep Z",
+	"  Zジク ビドウ",
+	"  Micropaso Z",
+    "  Babystep Z",
+    "  Babystep Z",
+    "  Babystep Z",
+	"  Babystep Z"
+};
+
+const char MMSG_BABYSTEP_TITLE[8][30]  = {
+	"微调Z轴",
+	"Babystep Z",
+	"Zジク ビドウ",
+	"Micropaso Z",
+    "Babystep Z",
+    "Babystep Z",
+    "Babystep Z",
+	"Babystep Z"
+};
+
+const char MMSG_BABYSTEP_TIP[8][210] = {
+	"点击按钮，可以按0.05mm间隔微调喷头高度.\r\n请谨慎使用该功能, 以防损坏模型或打印机.",
+	"Click the button to fine-tune the height of the nozzle in 0.05mm intervals. Please use this function carefully to prevent damage to the model or printer.",
+	"ボタンをクリックして, ノズルの高さを0.05mm間隔で微調整します. モデルやプリンターの損傷を防ぐため, この機能を慎重に使用してください.",
+	"Haga clic en el botón para ajustar la altura de la boquilla en intervalos de 0,05 mm. Utilice esta función con cuidado para evitar da?os en el modelo o la impresora.",
+	"Cliquez sur le bouton pour régler avec précision la hauteur de la buse par intervalles de 0,05 mm. Veuillez utiliser cette fonction avec précaution pour éviter d'endommager le modèle ou l'imprimante.",
+	"Klicken Sie auf die Schaltfl?che, um die H?he der Düse in Intervallen von 0,05 mm fein einzustellen. Bitte verwenden Sie diese Funktion sorgf?ltig, um Sch?den am Modell oder Drucker zu vermeiden.",
+	"Fare clic sul pulsante per regolare con precisione l'altezza dell'ugello a intervalli di 0,05 mm. Utilizzare questa funzione con attenzione per evitare danni al modello o alla stampante.",
+	"Klik op de knop om de hoogte van het mondstuk in stappen van 0,05 mm af te stellen. Gebruik deze functie zorgvuldig om schade aan het model of de printer te voorkomen."
+};
+
+const char MMSG_SETTING_AUTOSWITCH[8][30]  = {
+	"  自动切换喷头",
+	"  Auto Switch",
+	"  オートスイッチ",
+	"    Cambiar",
+    "   Detecteur",
+    "   Schalter",
+    "  Interruttore",
+	"   Schakelaar"
+};
+
+const char MMSG_SETTING_MANUALSWITCH[8][30]  = {
+	"  手动切换喷头",
+	" Manually Switch",
+	"  手動スイッチ",
+	"    Manual",
+    "    Manuel",
+    "   Handbuch",
+    "   Manuale",
+	"  Handleiding"
+};
+
+const char MMSG_TITLE_MANUALSWITCH[8][40]  = {
+	"手动切换喷头",
+	"Manually Switch Nozzle",
+	"手動でノズルを切り替える",
+	"Cambiar manualmente la boquilla",
+    "Changer manuellement de buse",
+    "Düse manuell wechseln",
+    "Cambia ugello manualmente",
+	"Handmatig van mondstuk wisselen"
+};
 
 #endif // 

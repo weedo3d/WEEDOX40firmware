@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #ifndef WTDUGSSCREEN_IAP_H
@@ -12,8 +8,6 @@
 #include "../help/WTDGUSScreen_ScrollList.h"
 #include "../WTDGUSConfig.h"
 
-
-// 固件升级菜单
 class DGUS_Screen_IAP : public DGUS_Screen_ScrollList
 {
 public:

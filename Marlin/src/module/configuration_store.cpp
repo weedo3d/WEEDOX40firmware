@@ -37,7 +37,7 @@
  */
 
 // Change EEPROM version if the structure changes
-#define EEPROM_VERSION "V76"
+#define EEPROM_VERSION "V77"
 #define EEPROM_OFFSET 100
 
 // Check the integrity of data offsets.
@@ -376,7 +376,9 @@ typedef struct SettingsDataStruct {
   uint8_t wtvar_counter;
   uint8_t wtvar_tune_x1;
   uint8_t wtvar_tune_x2;
-  uint8_t wtvar_tune_y;
+  uint8_t wtvar_tune_y1;
+  uint8_t wtvar_tune_y2;
+  uint8_t wtvar_autoswith;
 } SettingsData;
 
 //static_assert(sizeof(SettingsData) <= E2END + 1, "EEPROM too small to contain SettingsData!");
@@ -1322,10 +1324,14 @@ void MarlinSettings::postprocess() {
 	  // save counter time
 	  EEPROM_WRITE(wtvar_counter);
 
-      // save nozzle offset tune
-      EEPROM_WRITE(wtvar_tune_x1);
-      EEPROM_WRITE(wtvar_tune_x2);
-      EEPROM_WRITE(wtvar_tune_y);
+    // save nozzle offset tune
+    EEPROM_WRITE(wtvar_tune_x1);
+    EEPROM_WRITE(wtvar_tune_x2);
+    EEPROM_WRITE(wtvar_tune_y1);
+    EEPROM_WRITE(wtvar_tune_y2);
+
+    // save auto switch option
+    EEPROM_WRITE(wtvar_autoswith);
 
     //
     // Validate CRC and Data Size
@@ -1452,7 +1458,7 @@ void MarlinSettings::postprocess() {
             xyz_pos_t home_offset;
           #endif
           EEPROM_READ(home_offset);
-          // perron 200814, home_offset.x 用于复制模式时调整x位置用，每次启动后必须归零
+          // perron 200814
           home_offset.x = 0;
         #endif
       }
@@ -2169,74 +2175,67 @@ void MarlinSettings::postprocess() {
           if (!validating) ExtUI::onLoadSettings(extui_data);
         }
       #endif
-	  
-	// load go home var
-	EEPROM_READ(wtvar_gohome);
-	if (wtvar_gohome != 1)
-		wtvar_gohome = 0;
+      
+      // load go home var
+      EEPROM_READ(wtvar_gohome);
+      if (wtvar_gohome != 1)
+        wtvar_gohome = 0;
 
-	// load show welcome var
-	EEPROM_READ(wtvar_showWelcome);
-	if (wtvar_showWelcome != 0)
-		wtvar_showWelcome = 1;
+      // load show welcome var
+      EEPROM_READ(wtvar_showWelcome);
+      if (wtvar_showWelcome != 0)
+        wtvar_showWelcome = 1;
 
-	EEPROM_READ(wtvar_goDebugMenu);
-	if (wtvar_goDebugMenu != 1)
-		wtvar_goDebugMenu = 0;
+      EEPROM_READ(wtvar_goDebugMenu);
+      if (wtvar_goDebugMenu != 1)
+        wtvar_goDebugMenu = 0;
 
-	EEPROM_READ(wtvar_language);
-	if (wtvar_language > 15)
-		wtvar_language = 0;
+      EEPROM_READ(wtvar_language);
+      if (wtvar_language > 15)
+        wtvar_language = 0;
 
-	EEPROM_READ(wtvar_enablefilamentruncout);
-	if (wtvar_enablefilamentruncout != 1)
-		wtvar_enablefilamentruncout = 0;
+      EEPROM_READ(wtvar_enablefilamentruncout);
+      if (wtvar_enablefilamentruncout != 1)
+        wtvar_enablefilamentruncout = 0;
 
-	EEPROM_READ(wtvar_enablepoweroff);
-	if (wtvar_enablepoweroff != 0)
-		wtvar_enablepoweroff = 1;
+      EEPROM_READ(wtvar_enablepoweroff);
+      if (wtvar_enablepoweroff != 0)
+        wtvar_enablepoweroff = 1;
 
-	EEPROM_READ(wtvar_enableselftest);
-	if (wtvar_enableselftest != 0)
-		wtvar_enableselftest = 1;
+      EEPROM_READ(wtvar_enableselftest);
+      if (wtvar_enableselftest != 0)
+        wtvar_enableselftest = 1;
 
-	EEPROM_READ(wtvar_counter);
-	if (wtvar_counter > 30)
-		wtvar_counter = 0;
+      EEPROM_READ(wtvar_counter);
+      if (wtvar_counter > 30)
+        wtvar_counter = 0;
 
-    EEPROM_READ(wtvar_tune_x1);
-    // 当保存的t1 offset不是默认值时，改数值可能被用户修改过，tune x和tune y将以此数值进行推算
-    if (hotend_offset[1].x != T1_OFFSET_X)
-        wtvar_tune_x1 = (uint8_t)((int)(hotend_offset[1].x + 0.5) - T1_OFFSET_X) + 3;
+      EEPROM_READ(wtvar_tune_x1);
 
-    if (wtvar_tune_x1 > 5 || wtvar_tune_x1 <1)
+      if (wtvar_tune_x1 > 5 || wtvar_tune_x1 <1)
         wtvar_tune_x1 = 3;
 
-    EEPROM_READ(wtvar_tune_x2);
+      EEPROM_READ(wtvar_tune_x2);
 
-    if (hotend_offset[1].x != T1_OFFSET_X)
-    {
-        wtvar_tune_x2 = (uint8_t)(((float)((float)hotend_offset[1].x - (int)(hotend_offset[1].x + 0.5))) * 10 + 5.5);
-        if (wtvar_tune_x2 > 10) wtvar_tune_x2 -= 10;
-    }
+      if(wtvar_tune_x2 > 10 || wtvar_tune_x2 < 1)
+          wtvar_tune_x2 = 5;
 
-    if(wtvar_tune_x2 > 10 || wtvar_tune_x2 < 1)
-        wtvar_tune_x2 = 5;
+      EEPROM_READ(wtvar_tune_y1);
 
-    EEPROM_READ(wtvar_tune_y);
+      if (wtvar_tune_y1 > 5 || wtvar_tune_y1 <1)
+        wtvar_tune_y1 = 3;
 
-    if (hotend_offset[1].y != T1_OFFSET_Y)
-    {
-        wtvar_tune_y = (uint8_t)((float)hotend_offset[1].y * 10 + 5.5);
-        if (wtvar_tune_y > 10) wtvar_tune_y -= 10;
-    }
+      EEPROM_READ(wtvar_tune_y2);
 
-    if (wtvar_tune_y > 10 || wtvar_tune_y < 1)
-        wtvar_tune_y = 5;
-    
-    hotend_offset[1].x = T1_OFFSET_X + (wtvar_tune_x1 - 3) + ((float)wtvar_tune_x2 - 5) / 10;
-    hotend_offset[1].y = ((float)wtvar_tune_y - 5) / 10;
+      if(wtvar_tune_y2 > 10 || wtvar_tune_y2 < 1)
+          wtvar_tune_y2 = 5;
+      
+      hotend_offset[1].x = T1_OFFSET_X + (wtvar_tune_x1 - 3) + ((float)wtvar_tune_x2 - 5) / 10;
+      hotend_offset[1].y = (wtvar_tune_y1 - 3) + ((float)wtvar_tune_y2 - 5) / 10;
 	
+      EEPROM_READ(wtvar_autoswith);
+      if (wtvar_autoswith != 1)
+        wtvar_autoswith = 0;
 
       eeprom_error = size_error(eeprom_index - (EEPROM_OFFSET));
       if (eeprom_error) {
@@ -2809,6 +2808,7 @@ void MarlinSettings::reset() {
 	wtvar_enablepoweroff = 1;
 	wtvar_enableselftest = 1;
 	wtvar_counter = 15;
+  wtvar_autoswith = 0;
     // wtvar_tune_x1 = 3;
     // wtvar_tune_x2 = 5;
     // wtvar_tune_y = 5;

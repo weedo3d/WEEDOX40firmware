@@ -1,6 +1,6 @@
 /**
 * WEEDO 71A Motherboad pin configuration
-* Copyright (C) 2020 Wiibooxtech Perron
+* Copyright (C) 2021 Wiibooxtech Perron
 *
 *
 */

@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "../../MarlinCore.h"
@@ -19,7 +15,7 @@
 #include "../../feature/runout.h"
 
 #ifdef DGUS_LCD
-// 打印中参数设置菜单 
+
 void DGUS_Screen_PrintingSetting::Init()
 {
 	dserial.LoadScreen(SCREEN_SETTING);
@@ -41,7 +37,7 @@ void DGUS_Screen_PrintingSetting::KeyProcess()
 	if (gltouchpara.validflg)
 	{
 		if (gltouchpara.address == ADDR_SETTING_KEY)
-		{	// 打印设置菜单
+		{	
 			gltouchpara.validflg = false;
 			if (gltouchpara.value == KEY_SETTING_RETURN)
 			{
@@ -58,7 +54,7 @@ void DGUS_Screen_PrintingSetting::KeyProcess()
 			else if (gltouchpara.value == KEY_SETTING_ITEM1)
 			{
 				if (pageid == 0)
-				{	// 第1页第1项
+				{	
 					if (card.flag.sdprinting)
 					{
 						dgus.ShowMessageRetrun(MMSG_NOTICE_TITLE[wtvar_language],
@@ -69,7 +65,7 @@ void DGUS_Screen_PrintingSetting::KeyProcess()
 						ShowFilamentOption();
 				}
 				else if (pageid == 1)
-				{	// 第2页第1项
+				{	
 					if (wtvar_enablepoweroff)
 					{
 						wtvar_enablepoweroff = 0;
@@ -82,17 +78,35 @@ void DGUS_Screen_PrintingSetting::KeyProcess()
 					}
 					(void)settings.save();
 				}
+				else if (pageid == 2)
+				{	
+					if (wtvar_autoswith)
+					{
+						wtvar_autoswith = 0;
+						dserial.SendInt16(ADDR_SETTING_ICON_ITEM1, ENUM_OPTION_OFF);
+						runout.enabled = false;
+					}
+					else
+					{
+						wtvar_autoswith = 1;
+						wtvar_enablefilamentruncout = 1;
+						dserial.SendInt16(ADDR_SETTING_ICON_ITEM1, ENUM_OPTION_ON);
+						runout.enabled = true;
+					}
+					(void)settings.save();
+				}
 			}
 			else if (gltouchpara.value == KEY_SETTING_ITEM2)
 			{
 				if (pageid == 0)
-				{	// 第1页第2项
+				{	
 					ShowTempSetting();
 				}
 				else if (pageid == 1)
-				{	// 第2页第2项
+				{	
 					if (wtvar_enablefilamentruncout)
 					{
+						wtvar_autoswith = 0;
 						wtvar_enablefilamentruncout = 0;
 						dserial.SendInt16(ADDR_SETTING_ICON_ITEM2, ENUM_OPTION_OFF);
 						runout.enabled = false;
@@ -105,16 +119,24 @@ void DGUS_Screen_PrintingSetting::KeyProcess()
 					}
 					(void)settings.save();
 				}   
+				else if (pageid == 2)
+				{	
+					dgus.GotoManualSwitchMenu();
+				}
 
 			}
 			else if (gltouchpara.value == KEY_SETTING_ITEM3)
 			{
 				if (pageid == 0)
-				{	// 第1页第3项
+				{	
 					dgus.GotoSpeedSettingMenu();
 				}
 				else if (pageid == 1)
-				{	// 第2页第3项
+				{	
+					dgus.GotoBabystepMenu();
+				}
+				else if (pageid == 2)
+				{	
 					dgus.GotoSavePrintingMenu();
 				}
 			}
@@ -124,7 +146,7 @@ void DGUS_Screen_PrintingSetting::KeyProcess()
 			}
 		}
 		else if (gltouchpara.address == ADDR_2OPTION_KEY)
-		{	// 料丝菜单
+		{	
 			gltouchpara.validflg = false;
 			if (gltouchpara.value == KEY_2OPTION_BUTTON_RETURN)
 			{
@@ -171,13 +193,13 @@ void DGUS_Screen_PrintingSetting::KeyProcess()
 			}
 		}
 		else if (gltouchpara.address == ADDR_TEMP_VALUE1)
-		{	// 温度设置菜单
+		{	
 			gltouchpara.validflg = false;
 			target_nozzle0 = gltouchpara.value;
 			dserial.SendTemp(ADDR_TEMP_TEXT_VALUE1, target_nozzle0);
 		}
 		else if (gltouchpara.address == ADDR_TEMP_VALUE2)
-		{	// 温度设置菜单
+		{	
 			gltouchpara.validflg = false;
 			target_bed = gltouchpara.value;
 			dserial.SendTemp(ADDR_TEMP_TEXT_VALUE2, target_bed);
@@ -192,7 +214,7 @@ void DGUS_Screen_PrintingSetting::KeyProcess()
 		{
 			gltouchpara.validflg = false;
 			if (gltouchpara.value == KEY_HELP1_BUTTON_RETURN)
-			{	// 返回设置界面
+			{	
 				dserial.LoadScreen(SCREEN_SETTING);
 			}
 		}
@@ -211,7 +233,7 @@ void DGUS_Screen_PrintingSetting::ShowPrePage(void)
 
 void DGUS_Screen_PrintingSetting::ShowNextPage(void)
 {
-	if (pageid < 1)
+	if (pageid < 2)
 	{
 		pageid++;
 		ShowPage();
@@ -225,17 +247,14 @@ void DGUS_Screen_PrintingSetting::ShowPage(void)
 		dserial.SendEmptyString(ADDR_SETTING_TEXT_PRE, TEXTLEN_SETTING_BUTTON);
 		dserial.SendString(ADDR_SETTING_TEXT_NEXT, MMSG_NEXT_PAGE[wtvar_language]);
 
-		// 第1页第1项
 		dserial.SendInt16(ADDR_SETTING_ICON_ITEM1, ENUM_OPTION_NONE);
 		dserial.SendInt16(ADDR_SETTING_IMG_ITEM1, ENUM_SETTING_FILAMENT);
 		dserial.SendString(ADDR_SETTING_TEXT_ITEM1, MMSG_SETTING_FILAMENT[wtvar_language], TEXTLEN_SETTING_ITEM);
 
-		// 第1页第2项
 		dserial.SendInt16(ADDR_SETTING_ICON_ITEM2, ENUM_OPTION_NONE);
 		dserial.SendInt16(ADDR_SETTING_IMG_ITEM2, ENUM_SETTING_TEMP);
 		dserial.SendString(ADDR_SETTING_TEXT_ITEM2, MMSG_SETTING_TEMP[wtvar_language], TEXTLEN_SETTING_ITEM);
 		
-		// 第1页第3项
 		dserial.SendInt16(ADDR_SETTING_ICON_ITEM3, ENUM_OPTION_NONE);
 		dserial.SendInt16(ADDR_SETTING_IMG_ITEM3, ENUM_SETTING_SPEED);
 		dserial.SendString(ADDR_SETTING_TEXT_ITEM3, MMSG_SETTING_SPEED[wtvar_language], TEXTLEN_SETTING_ITEM);
@@ -244,9 +263,8 @@ void DGUS_Screen_PrintingSetting::ShowPage(void)
 	else if (pageid == 1)
 	{
 		dserial.SendString(ADDR_SETTING_TEXT_PRE, MMSG_PRE_PAGE[wtvar_language]);
-		dserial.SendEmptyString(ADDR_SETTING_TEXT_NEXT, TEXTLEN_SETTING_BUTTON);
+		dserial.SendString(ADDR_SETTING_TEXT_NEXT, MMSG_NEXT_PAGE[wtvar_language]);
 
-		// 第2页第1项
 		if (wtvar_enablepoweroff)
 			dserial.SendInt16(ADDR_SETTING_ICON_ITEM1, ENUM_OPTION_ON);
 		else
@@ -254,7 +272,6 @@ void DGUS_Screen_PrintingSetting::ShowPage(void)
 		dserial.SendInt16(ADDR_SETTING_IMG_ITEM1, ENUM_SETTING_POWEROFF);
 		dserial.SendString(ADDR_SETTING_TEXT_ITEM1, MMSG_SETTING_POWEROFF[wtvar_language], 32);
 
-        // 第2页第2项
 		if (wtvar_enablefilamentruncout)
 			dserial.SendInt16(ADDR_SETTING_ICON_ITEM2, ENUM_OPTION_ON);
 		else
@@ -262,7 +279,27 @@ void DGUS_Screen_PrintingSetting::ShowPage(void)
 		dserial.SendInt16(ADDR_SETTING_IMG_ITEM2, ENUM_SETTING_RUNOUT);
 		dserial.SendString(ADDR_SETTING_TEXT_ITEM2, MMSG_SETTING_RUNOUT[wtvar_language], TEXTLEN_SETTING_ITEM);
 
-		// 第2页第3项
+		dserial.SendInt16(ADDR_SETTING_ICON_ITEM3, ENUM_OPTION_NONE);
+		dserial.SendInt16(ADDR_SETTING_IMG_ITEM3, ENUM_SETTING_ZOFFSET);
+		dserial.SendString(ADDR_SETTING_TEXT_ITEM3, MMSG_SETTING_BABYSTEP[wtvar_language], TEXTLEN_SETTING_ITEM);
+
+	}
+	else if (pageid == 2)
+	{
+		dserial.SendString(ADDR_SETTING_TEXT_PRE, MMSG_PRE_PAGE[wtvar_language]);
+		dserial.SendEmptyString(ADDR_SETTING_TEXT_NEXT, TEXTLEN_SETTING_BUTTON);
+
+		if (wtvar_autoswith)
+			dserial.SendInt16(ADDR_SETTING_ICON_ITEM1, ENUM_OPTION_ON);
+		else
+			dserial.SendInt16(ADDR_SETTING_ICON_ITEM1, ENUM_OPTION_OFF);
+		dserial.SendInt16(ADDR_SETTING_IMG_ITEM1, ENUM_SETTING_NOZZLE_X);
+		dserial.SendString(ADDR_SETTING_TEXT_ITEM1, MMSG_SETTING_AUTOSWITCH[wtvar_language], TEXTLEN_SETTING_ITEM);
+
+		dserial.SendInt16(ADDR_SETTING_ICON_ITEM2, ENUM_OPTION_NONE);
+		dserial.SendInt16(ADDR_SETTING_IMG_ITEM2, ENUM_SETTING_NOZZLE_Z);
+		dserial.SendString(ADDR_SETTING_TEXT_ITEM2, MMSG_SETTING_MANUALSWITCH[wtvar_language], TEXTLEN_SETTING_ITEM);
+
 		dserial.SendInt16(ADDR_SETTING_ICON_ITEM3, ENUM_OPTION_NONE);
 		dserial.SendInt16(ADDR_SETTING_IMG_ITEM3, ENUM_SETTING_SAVE);
 		dserial.SendString(ADDR_SETTING_TEXT_ITEM3, MMSG_SETTING_SAVE[wtvar_language], TEXTLEN_SETTING_ITEM);
@@ -302,7 +339,6 @@ void DGUS_Screen_PrintingSetting::ShowTempSetting(void)
 	target_nozzle1 = thermalManager.degTargetHotend(1);
 	target_bed = thermalManager.degBed();
 
-    // 修改显示屏中寄存器数值
 	dserial.SendInt16(ADDR_TEMP_VALUE1, target_nozzle0);
 	dserial.SendInt16(ADDR_TEMP_VALUE3, target_nozzle1);
 	dserial.SendInt16(ADDR_TEMP_VALUE2, target_bed);
@@ -310,7 +346,6 @@ void DGUS_Screen_PrintingSetting::ShowTempSetting(void)
 	ShowTarget();
 }
 
-// 显示温度数据字符串
 void DGUS_Screen_PrintingSetting::ShowTarget(void)
 {
     dserial.SendTemp(ADDR_TEMP_TEXT_VALUE1, target_nozzle0);
@@ -327,6 +362,10 @@ void DGUS_Screen_PrintingSetting::ShowHelp(void)
 	else if (pageid == 1)
 	{
 		dgus.ShowHelp(HELP_TIP03_LINE2[wtvar_language]);
+	}
+	else if (pageid == 2)
+	{
+		dgus.ShowHelp(HELP_TIP03_LINE3[wtvar_language]);
 	}
 }
 #endif

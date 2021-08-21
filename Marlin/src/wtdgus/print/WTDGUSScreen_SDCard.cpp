@@ -1,10 +1,7 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
-/*
-* DGus 窗口类的定义
-*/
 
 #include "../../MarlinCore.h"
 #include "../../module/temperature.h"
@@ -18,7 +15,7 @@
 #include "../../wtlib/WTUtilty.h"
 
 #ifdef DGUS_LCD
-// SD卡菜单 
+
 void DGUS_Screen_SDCard::Init()
 {
 	dserial.LoadScreen(SCREEN_SDCARD);
@@ -103,14 +100,13 @@ void DGUS_Screen_SDCard::KeyProcess()
 		{
 			gltouchpara.validflg = false;
 			if (gltouchpara.value == KEY_HELP1_BUTTON_RETURN)
-			{	// 返回SD界面
+			{	
 				dserial.LoadScreen(SCREEN_SDCARD);
 			}
 		}
 	}
 }
 
-// 发送文件名
 void DGUS_Screen_SDCard::ShowFileInfo(char* filename, uint16_t len, uint8_t index)
 {
 	if (len == 0)
@@ -119,7 +115,6 @@ void DGUS_Screen_SDCard::ShowFileInfo(char* filename, uint16_t len, uint8_t inde
 		dserial.SendUnicodeString(DGUS_SDMENU_FILENAME_ADDR + index * DGUS_SDMENU_FILENAME_INTERVAL, filename, len, TEXTLEN_TF_ITEM);
 }
 
-// 显示当前页文件列表
 void DGUS_Screen_SDCard::ShowPage(uint8_t id)
 {
 	uint8_t beginPos, endPos, curIndex;
@@ -135,7 +130,6 @@ void DGUS_Screen_SDCard::ShowPage(uint8_t id)
 	{
 		card.selectFileByIndex(beginPos);
 
-		// 显示unicode编码文件名
 		uint16_t _len = strlen(card.longFilename) * 2;
         if (_len > 0)
         {
@@ -143,7 +137,6 @@ void DGUS_Screen_SDCard::ShowPage(uint8_t id)
         }
         else
         {
-            // 短文件名转为unicode字符串
             _len = strlen(card.filename) * 2;
             ZERO(filename_buffer);
             Utf8ToUnicode(card.filename, filename_buffer);
@@ -151,7 +144,6 @@ void DGUS_Screen_SDCard::ShowPage(uint8_t id)
          
 		ShowFileInfo(filename_buffer, _len, curIndex);
 
-		// 保存至文件列表
 		memcpy(filelist[curIndex].buffer, filename_buffer, _len);
 		filelist[curIndex].len = _len;
 
@@ -159,7 +151,6 @@ void DGUS_Screen_SDCard::ShowPage(uint8_t id)
 		beginPos++;
 	}
 
-	// 剩余空行清空
 	while (curIndex < 6)
 	{
 		ShowFileInfo(NULL, 0, curIndex);

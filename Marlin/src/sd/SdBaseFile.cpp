@@ -1097,19 +1097,10 @@ int8_t SdBaseFile::readDir(dir_t* dir, char* longFilename, uint8_t* longlongFile
               longlongFilename[(n + i) * 2] = (_tc & 0xFF00) >> 8;
               longlongFilename[(n + i) * 2 + 1] = _tc & 0xFF;
           }
-            //longFilename[n + i] = (i < 5) ? VFAT->name1[i] : (i < 11) ? VFAT->name2[i - 5] : VFAT->name3[i - 11];
+
           // If this VFAT entry is the last one, add a NUL terminator at the end of the string
           if (VFAT->sequenceNumber & 0x40) longFilename[n + FILENAME_LENGTH] = '\0';
 
-          // // perron, copy unicode char back to longFilename
-          // uint16_t _len = strlen(longFilename);
-          // uint16_t _p = 0;
-          // LOOP_L_N(i, _len)
-          // {
-          //   if (longlongFilename[i] > 0)
-          //     longFilename[_p++] = longlongFilename[i];
-          // }
-          // longFilename[_p] = '\0';
         }
       }
     }

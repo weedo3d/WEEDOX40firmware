@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "../../MarlinCore.h"
@@ -28,7 +24,7 @@
 #define Z_WAITING					50000
 
 #ifdef DGUS_LCD
-// 设置菜单 
+
 void DGUS_Screen_SelfTest::Init()
 {
 	dserial.LoadScreen(SCREEN_MACHINE_INFO);
@@ -48,7 +44,6 @@ void DGUS_Screen_SelfTest::Init()
 
 	dserial.SendInt16(ADDR_MACHINE_ICON_HELP, ENUM_HELP_ICON_HELP);
 
-	// 读取左喷头温度
 	nozzleState0 = SNE_READING;
 	temp_nozzle0 = thermalManager.degHotend(0);
 	if (temp_nozzle0 < -10)
@@ -71,7 +66,6 @@ void DGUS_Screen_SelfTest::Init()
 		nozzleState0 = SNE_HEATING;
 	}
 
-    // 读取右喷头温度
 	nozzleState1 = SNE_READING;
 	temp_nozzle1 = thermalManager.degHotend(1);
 	if (temp_nozzle1 < -10)
@@ -94,7 +88,6 @@ void DGUS_Screen_SelfTest::Init()
 		nozzleState1 = SNE_HEATING;
 	}
 
-	// 读取平台温度
 	bedState = SBE_READING;
 	temp_bed = thermalManager.degBed();
 	if (temp_bed < -10)
@@ -105,10 +98,7 @@ void DGUS_Screen_SelfTest::Init()
 	}
 	else
 	{
-		// if (temp_bed < BED_THRESHOLD)
-		// 	target_bed = temp_bed + BED_LOW_HEATING_TEMP;
-		// else
-			target_bed = temp_bed + BED_HIGH_HEATING_TEMP;
+		target_bed = temp_bed + BED_HIGH_HEATING_TEMP;
 
 		thermalManager.setTargetBed(target_bed);
 
@@ -130,7 +120,6 @@ void DGUS_Screen_SelfTest::Update()
 	temp_nozzle1 = thermalManager.degHotend(1);
 	temp_bed = thermalManager.degBed();
 
-    // 检查左喷头状态
 	if (nozzleState0 == SNE_HEATING)
 	{
 		if ((beginTime + NOZZLE_HEATING_WAITING) > getcurrenttime())
@@ -143,7 +132,7 @@ void DGUS_Screen_SelfTest::Update()
 			}
 		}
 		else
-		{	// 喷头加热超时
+		{	
 			dserial.SendString(ADDR_MACHINE_ERROR1, MMSG_SELF_TEST_NOHEAT[wtvar_language], 32);
 			dserial.SendEmptyString(ADDR_MACHINE_VALUE1, 30);
 			nozzleState0 = SNE_ERROR;
@@ -151,7 +140,6 @@ void DGUS_Screen_SelfTest::Update()
 		}
 	}
 
-    // 检查右喷头状态
 	if (nozzleState1 == SNE_HEATING)
 	{
 		if ((beginTime + NOZZLE_HEATING_WAITING) > getcurrenttime())
@@ -164,7 +152,7 @@ void DGUS_Screen_SelfTest::Update()
 			}
 		}
 		else
-		{	// 喷头加热超时
+		{	
 			dserial.SendString(ADDR_MACHINE_ERROR2, MMSG_SELF_TEST_NOHEAT[wtvar_language], 32);
 			dserial.SendEmptyString(ADDR_MACHINE_VALUE2, 30);
 			nozzleState1 = SNE_ERROR;
@@ -172,7 +160,6 @@ void DGUS_Screen_SelfTest::Update()
 		}
 	}
 
-    // 检查平台状态
 	if (bedState == SBE_HEATING)
 	{
 		if ((beginTime + BED_HEATING_WAITING) > getcurrenttime())
@@ -185,7 +172,7 @@ void DGUS_Screen_SelfTest::Update()
 			}
 		}
 		else
-		{	// 平台加热超时
+		{	
 			dserial.SendString(ADDR_MACHINE_ERROR3, MMSG_SELF_TEST_NOHEAT[wtvar_language], 32);
 			dserial.SendEmptyString(ADDR_MACHINE_VALUE3, 30);
 			bedState = SBE_ERROR;
@@ -204,7 +191,7 @@ void DGUS_Screen_SelfTest::Update()
 			}
 		}
 		else
-		{	// X归位超时
+		{	
 			dserial.SendString(ADDR_MACHINE_ERROR4, MMSG_SELF_TEST_NOHOMING[wtvar_language], 32);
 			dserial.SendEmptyString(ADDR_MACHINE_VALUE4, 30);
 			axisState = SAE_ERROR;
@@ -221,7 +208,7 @@ void DGUS_Screen_SelfTest::Update()
 			}
 		}
 		else
-		{	// Y归位超时
+		{	
 			dserial.SendString(ADDR_MACHINE_ERROR5, MMSG_SELF_TEST_NOHOMING[wtvar_language], 32);
 			dserial.SendEmptyString(ADDR_MACHINE_VALUE5, 30);
 			axisState = SAE_ERROR;
@@ -239,7 +226,7 @@ void DGUS_Screen_SelfTest::Update()
 			}
 		}
 		else
-		{	// Z归位超时
+		{	
 			dserial.SendString(ADDR_MACHINE_ERROR6, MMSG_SELF_TEST_NOHOMING[wtvar_language], 32);
 			dserial.SendEmptyString(ADDR_MACHINE_VALUE6, 30);
 			axisState = SAE_ERROR;
@@ -278,7 +265,7 @@ void DGUS_Screen_SelfTest::KeyProcess()
 		{
 			gltouchpara.validflg = false;
 			if (gltouchpara.value == KEY_HELP1_BUTTON_RETURN)
-			{	// 返回自检界面
+			{	
 				dserial.LoadScreen(SCREEN_MACHINE_INFO);
 			}
 		}
@@ -335,7 +322,6 @@ void DGUS_Screen_SelfTest::doxhome(void)
 	}
 	else
 	{
-		// X轴归位
 		dserial.SendString(ADDR_MACHINE_VALUE4, MMSG_SELF_TEST_MOVING[wtvar_language], 32);
 		queue.enqueue_now_P(PSTR("G28 X F2000"));
 		axisState = SAE_XMOVING;
@@ -353,7 +339,7 @@ void DGUS_Screen_SelfTest::doyhome(void)
 	else
 	{
 		dserial.SendString(ADDR_MACHINE_VALUE5, MMSG_SELF_TEST_MOVING[wtvar_language], 32);
-		// Y归位
+
 		queue.enqueue_now_P(PSTR("G28 Y F2000"));
 		axisState = SAE_YMOVING;
 		axisTime = getcurrenttime();
@@ -372,7 +358,7 @@ void DGUS_Screen_SelfTest::dozhome(void)
 	else
 	{
 		dserial.SendString(ADDR_MACHINE_VALUE6, MMSG_SELF_TEST_MOVING[wtvar_language], 32);
-		// Z归位
+
 		queue.enqueue_now_P(PSTR("G28 Z F500"));
 		axisState = SAE_ZMOVING;
 		axisTime = getcurrenttime();

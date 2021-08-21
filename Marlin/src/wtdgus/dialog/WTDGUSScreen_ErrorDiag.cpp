@@ -1,9 +1,5 @@
 /**
-* Copyright (C) 2020 Wiibooxtech Perron
-*/
-
-/*
-* DGus 窗口类的定义
+* Copyright (C) 2021 Wiibooxtech Perron
 */
 
 #include "../../MarlinCore.h"
@@ -16,7 +12,7 @@
 #include "../WTHelpDoc.h"
 
 #ifdef DGUS_LCD
-// 设置菜单 
+
 void DGUS_Screen_ErrorDiag::Init()
 {
 	dserial.LoadScreen(SCREEN_HELP2);
@@ -38,12 +34,12 @@ void DGUS_Screen_ErrorDiag::Update()
     case 14:
     case 17:
         break;
-	case 2:     // 第1步 X1电机诊断
-	case 5:     // 第3步 X2电机诊断
-    case 8:     // 第5步 Y电机诊断
-    case 10:    // 第7步 Z电机诊断
-    case 12:    // 第9步 左挤出器电机诊断
-    case 15:    // 第12步 右挤出器电机诊断
+	case 2:    
+	case 5:     
+    case 8:     
+    case 10:   
+    case 12:    
+    case 15:    
 		if (planner.has_blocks_queued() == false && moving)
 		{
 			moving = 0;
@@ -51,7 +47,7 @@ void DGUS_Screen_ErrorDiag::Update()
 		}
 		break;
 
-	case 3:     // 第2步 X1限位开关诊断
+	case 3:    
 		if (!READ(X_MIN_PIN) && moving)
 		{
 			moving = 0;
@@ -59,7 +55,7 @@ void DGUS_Screen_ErrorDiag::Update()
 		}
 		break;
 
-    case 6:     // 第4步 X2限位开关诊断
+    case 6:    
 		if (!READ(X_MAX_PIN) && moving)
 		{
 			moving = 0;
@@ -67,7 +63,7 @@ void DGUS_Screen_ErrorDiag::Update()
 		}
 		break;
 
-	case 9:     // 第6步 Y限位开关诊断
+	case 9:    
 		if (!READ(Y_MIN_PIN) && moving)
 		{
 			moving = 0;
@@ -75,7 +71,7 @@ void DGUS_Screen_ErrorDiag::Update()
 		}
 		break;
 
-    case 11:    // 第8步 接近开关诊断
+    case 11:    
         if (planner.has_blocks_queued() == false && moving)
 		{
 			moving = 0;
@@ -89,7 +85,7 @@ void DGUS_Screen_ErrorDiag::Update()
 
 		break;
 
-	case 13:    // 第10步 左喷头组件诊断
+	case 13:   
 		if (thermalManager.degHotend(0) > 58 && moving)
 		{
 			moving = 0;
@@ -105,7 +101,7 @@ void DGUS_Screen_ErrorDiag::Update()
 
 		break;
 
-    case 16:    // 右喷头组件诊断
+    case 16:    
 		if (thermalManager.degHotend(1) > 58 && moving)
 		{
 			moving = 0;
@@ -121,7 +117,7 @@ void DGUS_Screen_ErrorDiag::Update()
 
 		break;
 
-    case 18:    // 第15步 平台加热诊断
+    case 18:    
 		if (thermalManager.degBed() > 38 && moving)
 		{
 			moving = 0;
@@ -178,7 +174,7 @@ void DGUS_Screen_ErrorDiag::KeyProcess()
 void DGUS_Screen_ErrorDiag::ShowPage(void)
 {
 	if (pageid == 1)
-	{	// 第1步 X电机诊断
+	{	
         queue.enqueue_now_P(PSTR("T0 S1"));
 	    queue.enqueue_now_P(PSTR("M605 S0"));
         queue.enqueue_now_P(PSTR("T0"));
@@ -190,7 +186,7 @@ void DGUS_Screen_ErrorDiag::ShowPage(void)
 
 	}
 	else if (pageid == 2)
-	{	// 第1步 X电机诊断
+	{	
 		queue.enqueue_now_P(PSTR("M211 S0"));
 		queue.enqueue_now_P(PSTR("M121"));
         queue.enqueue_now_P(PSTR("G91"));
@@ -204,7 +200,7 @@ void DGUS_Screen_ErrorDiag::ShowPage(void)
 
 	}
 	else if (pageid == 3)
-	{	// 第2步 X1限位开关诊断
+	{	
 		queue.enqueue_now_P(PSTR("M120"));
         queue.enqueue_now_P(PSTR("G91"));
         queue.enqueue_now_P(PSTR("G1 X-300 F3000"));
@@ -215,7 +211,7 @@ void DGUS_Screen_ErrorDiag::ShowPage(void)
 		ShowDialog(DIAG_PAGE3_TITLE[wtvar_language], DIAG_PAGE3_LINE[wtvar_language]);
 	}
     else if (pageid == 4)
-    {   // 第3步 X2电机诊断
+    {   
         queue.enqueue_now_P(PSTR("T1 S1"));
 		queue.enqueue_now_P(PSTR("M84"));
 
@@ -224,7 +220,7 @@ void DGUS_Screen_ErrorDiag::ShowPage(void)
 		ShowDialog(DIAG_PAGE4_TITLE[wtvar_language], DIAG_PAGE4_LINE[wtvar_language]);
     }
     else if (pageid == 5)
-    {   // 第3步 X2电机诊断
+    {   
 		queue.enqueue_now_P(PSTR("M211 S0"));
 		queue.enqueue_now_P(PSTR("M121"));
 		queue.enqueue_now_P(PSTR("G91"));
@@ -237,7 +233,7 @@ void DGUS_Screen_ErrorDiag::ShowPage(void)
 		ShowDialog(DIAG_PAGE4_TITLE[wtvar_language], DIAG_PAGE5_LINE[wtvar_language]);
     }
     else if (pageid == 6)
-    {   // 第4步 X2限位开关诊断
+    {  
 		queue.enqueue_now_P(PSTR("M120"));
         queue.enqueue_now_P(PSTR("G91"));
         queue.enqueue_now_P(PSTR("G1 X300 F3000"));
@@ -248,7 +244,7 @@ void DGUS_Screen_ErrorDiag::ShowPage(void)
 		ShowDialog(DIAG_PAGE6_TITLE[wtvar_language], DIAG_PAGE6_LINE[wtvar_language]);
     }
     else if (pageid == 7)
-    {   // 第5步 Y电机诊断
+    {   
 		queue.enqueue_now_P(PSTR("M84"));
 
 		dserial.SendString(ADDR_HELP2_TEXT_BUTTON2, MMSG_NEXT[wtvar_language], 20);
@@ -256,7 +252,7 @@ void DGUS_Screen_ErrorDiag::ShowPage(void)
 		ShowDialog(DIAG_PAGE7_TITLE[wtvar_language], DIAG_PAGE7_LINE[wtvar_language]);
     }
 	else if (pageid == 8)
-	{	// 第5步 Y电机诊断
+	{	
     	queue.enqueue_now_P(PSTR("M211 S0"));
 		queue.enqueue_now_P(PSTR("M121"));
 		queue.enqueue_now_P(PSTR("G91"));
@@ -270,8 +266,7 @@ void DGUS_Screen_ErrorDiag::ShowPage(void)
 		ShowDialog(DIAG_PAGE7_TITLE[wtvar_language], DIAG_PAGE8_LINE[wtvar_language]);
 	}
 	else if (pageid == 9)
-	{	// 第6步 Y限位开关诊断
-		// queue.enqueue_now_P(PSTR("M211 S1"));
+	{
 		queue.enqueue_now_P(PSTR("M120"));
 		queue.enqueue_now_P(PSTR("G91"));
         queue.enqueue_now_P(PSTR("G1 Y-300 F3000"));
@@ -282,7 +277,7 @@ void DGUS_Screen_ErrorDiag::ShowPage(void)
 		ShowDialog(DIAG_PAGE9_TITLE[wtvar_language], DIAG_PAGE9_LINE[wtvar_language]);
 	}
 	else if (pageid == 10)
-	{	// 第7步 Z电机诊断
+	{	
 		queue.enqueue_now_P(PSTR("M211 S0"));
 		queue.enqueue_now_P(PSTR("M121"));
 		queue.enqueue_now_P(PSTR("G91"));
@@ -296,11 +291,11 @@ void DGUS_Screen_ErrorDiag::ShowPage(void)
 		ShowDialog(DIAG_PAGE10_TITLE[wtvar_language], DIAG_PAGE10_LINE[wtvar_language]);
 	}
 	else if (pageid == 11)
-	{	// 第8步 接近开关诊断
+	{	
 		ShowDialog(DIAG_PAGE11_TITLE[wtvar_language], DIAG_PAGE11_LINE[wtvar_language]);
 	}
 	else if (pageid == 12)
-	{	// 第9步 左挤出器电机诊断
+	{	
 		queue.enqueue_now_P(PSTR("T0 S1"));
 		queue.enqueue_now_P(PSTR("M302 P1"));
 		queue.enqueue_now_P(PSTR("G91"));
@@ -314,10 +309,9 @@ void DGUS_Screen_ErrorDiag::ShowPage(void)
 		ShowDialog(DIAG_PAGE12_TITLE[wtvar_language], DIAG_PAGE12_LINE[wtvar_language]);
 	}
 	else if (pageid == 13)
-	{	// 第10步 左喷头组件诊断
+	{	
 		dserial.SendEmptyString(ADDR_HELP2_TEXT_BUTTON2, 20);
 
-        // 读取喷头温度
 		temp_nozzle0 = thermalManager.degHotend(0);
 		if (temp_nozzle0 < -10)
 		{
@@ -332,7 +326,7 @@ void DGUS_Screen_ErrorDiag::ShowPage(void)
 		}
 	}
 	else if (pageid == 14)
-	{	// 第11步 左喷头风扇诊断
+	{	
         queue.enqueue_now_P(PSTR("M104 T0 S0"));
 		queue.enqueue_now_P(PSTR("M106 P0 S255"));
 		dserial.SendEmptyString(ADDR_HELP2_TEXT_LINE2, 20);
@@ -340,7 +334,7 @@ void DGUS_Screen_ErrorDiag::ShowPage(void)
         ShowDialog(DIAG_PAGE14_TITLE[wtvar_language], DIAG_PAGE14_LINE[wtvar_language]);
 	}
 	else if (pageid == 15)
-	{	// 第12步 右挤出器电机诊断
+	{	
         queue.enqueue_now_P(PSTR("M107 P0"));
         queue.enqueue_now_P(PSTR("T1 S1"));
 		queue.enqueue_now_P(PSTR("M302 P1"));
@@ -354,10 +348,9 @@ void DGUS_Screen_ErrorDiag::ShowPage(void)
 		ShowDialog(DIAG_PAGE15_TITLE[wtvar_language], DIAG_PAGE15_LINE[wtvar_language]);
 	}
 	else if (pageid == 16)
-	{	// 第13步 右喷头组件诊断
+	{	
 		dserial.SendEmptyString(ADDR_HELP2_TEXT_BUTTON2, 20);
 
-        // 读取喷头温度
 		temp_nozzle0 = thermalManager.degHotend(1);
 		if (temp_nozzle0 < -10)
 		{
@@ -372,7 +365,7 @@ void DGUS_Screen_ErrorDiag::ShowPage(void)
 		}
 	}
 	else if (pageid == 17)
-	{	// 第14步 右喷头风扇诊断
+	{	
         queue.enqueue_now_P(PSTR("M104 T1 S0"));
 		queue.enqueue_now_P(PSTR("M106 P1 S255"));
 		dserial.SendEmptyString(ADDR_HELP2_TEXT_LINE2, 20);
@@ -380,7 +373,7 @@ void DGUS_Screen_ErrorDiag::ShowPage(void)
         ShowDialog(DIAG_PAGE17_TITLE[wtvar_language], DIAG_PAGE17_LINE[wtvar_language]);
 	}
     else if (pageid == 18)
-	{	// 第15步 平台加热诊断
+	{	
         queue.enqueue_now_P(PSTR("M107 P1"));
 		dserial.SendEmptyString(ADDR_HELP2_TEXT_BUTTON2, 20);
 

@@ -3,7 +3,7 @@
 #define BOARD_UNKNOWN -1
 
 #define BOARD_WEEDO_62A			800
-#define BOARD_WEEDO_62B			801		//perron: WEEDO 62B
+#define BOARD_WEEDO_62B			801	
 #define BOARD_WEEDO_62V1		802	
 #define BOARD_WEEDO_61A			803	
 #define BOARD_WEEDO_61B			804	
