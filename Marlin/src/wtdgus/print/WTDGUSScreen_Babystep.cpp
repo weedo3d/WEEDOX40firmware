@@ -19,7 +19,8 @@ void DGUS_Screen_Babystep::Init()
 	dserial.SendEmptyString(ADDR_ZOFFSET_TEXT_BUTTON1, TEXTLEN_ZOFFSET_BUTTON);
 	dserial.SendString(ADDR_ZOFFSET_TEXT_BUTTON2, MMSG_OK[wtvar_language], TEXTLEN_ZOFFSET_BUTTON);
 	dserial.SendLongString_P(ADDR_ZOFFSET_TEXT_LINE, MMSG_BABYSTEP_TIP[wtvar_language], TEXTLEN_ZOFFSET_LINE);
-
+	dserial.SendString(ADDR_ZOFFSET_TEXT2_VALUE, PSTR("mm"), 4);
+	
 	holdontime = getcurrenttime();
 	updaterate = 200;
 

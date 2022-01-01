@@ -19,6 +19,7 @@ void DGUS_Screen_Preview::Init()
     dserial.LoadScreen(SCREEN_PREVIEW);
     b_enable = true;
     holdontime = getcurrenttime();
+    wtvar_dual_mode = 0;
 
     dserial.SendString(ADDR_PREVIEW_TITLE, MMSG_PREVIEW_TITLE[wtvar_language], TEXTLEN_PREVIEW_TITLE);
     dserial.SendString(ADDR_PREVIEW_BUTTON1, MMSG_BACK[wtvar_language], TEXTLEN_PREVIEW_BUTTON);
@@ -151,6 +152,7 @@ void DGUS_Screen_Preview::enable(bool action)
 
 void DGUS_Screen_Preview::do_print(void)
 {
+    queue.enqueue_now_P("T0 S");
     if (dgus.jobinfo.remote)
     { 
         wt_ndisk_print();

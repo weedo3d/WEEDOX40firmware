@@ -420,8 +420,7 @@ void InPacket::Process_Reboot(void)
 	outp->Send();
 
 	wt_restart();
-	while (1)
-		;
+	while (1);
 }
 
 extern uint8_t wifiStatus;
@@ -531,8 +530,8 @@ void InPacket::Process_AbortPrinting(void)
 
 	safe_delay(500);
 
-	while (1)
-		;
+	//lcd_sdcard_stop();
+	while (1);
 }
 
 void InPacket::Process_FileLength(void)

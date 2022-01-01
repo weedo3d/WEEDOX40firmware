@@ -148,7 +148,7 @@ void DGUS_Screen_Filament::Update()
 
 				if (filamentType != FT_TPU)
 				{
-					queue.enqueue_now_P("G1 E5 F100");
+					queue.enqueue_now_P("G1 E15 F100");
 					queue.enqueue_now_P("G1 E-40 F300");
 				}
 				else
@@ -190,9 +190,12 @@ void DGUS_Screen_Filament::Update()
 
 	case FSSE_COMPLETE:
 		filaopsts = FSSE_CHOICETYPE;
-        if (wt_machineStatus != WS_PAUSE)   
+        if (wt_machineStatus != WS_PAUSE)  
+		{
 		    queue.enqueue_now_P("M104 S0");
-        queue.enqueue_now_P("M18");
+        	queue.enqueue_now_P("T0 S");
+        	queue.enqueue_now_P("M18");
+		}
 		Goback();
 		break;
 
@@ -276,13 +279,14 @@ void DGUS_Screen_Filament::KeyProcess()
                         filaopsts = FSSE_COMPLETE;
                         queue.enqueue_now_P("M104 S0");
                         queue.enqueue_now_P("M410");
+						queue.enqueue_now_P("T0 S");
 						queue.enqueue_now_P("M18");
                         Goback();
                     }
                 }
                 else
                 {
-					queue.enqueue_now_P("M18");   
+					// queue.enqueue_now_P("M18");   
                     Goback();
                 }
 			}
@@ -297,8 +301,9 @@ void DGUS_Screen_Filament::KeyProcess()
 					filaopsts = FSSE_COMPLETE;
 					queue.enqueue_now_P("M104 S0");
 					queue.enqueue_now_P("M410");
+					queue.enqueue_now_P("T0 S");
+					queue.enqueue_now_P("M18");
                 }
-                queue.enqueue_now_P("M18");
                 Goback();				
 			}
 			else if (gltouchpara.value == KEY_2OPTION_BUTTON_ITEM1)

@@ -174,7 +174,7 @@ void DGUS_Screen_Nozzle_Z::ShowPage(void)
         dserial.SendString(ADDR_ZOFFSET_TEXT_BUTTON1, MMSG_EXIT[wtvar_language], TEXTLEN_ZOFFSET_BUTTON);
         dserial.SendString(ADDR_ZOFFSET_TEXT_BUTTON2, MMSG_NEXT[wtvar_language], TEXTLEN_ZOFFSET_BUTTON);
         dserial.SendLongString_P(ADDR_ZOFFSET_TEXT_LINE, MMSG_NOZZLE_Z_TEXT2[wtvar_language], TEXTLEN_ZOFFSET_LINE);
-
+		dserial.SendString(ADDR_ZOFFSET_TEXT2_VALUE, PSTR("mm"), 4);
     }
 	else if (pageid == 3)
 	{

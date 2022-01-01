@@ -42,6 +42,7 @@ public:
 	static void SendBuffer(uint16_t addr, const uint8_t* buffer, uint8_t total_length);
     static void SendTemp(uint16_t addr, int16_t temp);
 	static void SendFloatString(uint16_t addr, float data);
+	static void SendPercentString(uint16_t addr, uint16_t data);
 
 	static void JPG_Reset();	
 	static void JPG_Send(const uint8_t* str, uint8_t str_len);

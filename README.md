@@ -9,6 +9,10 @@ We fixed some bugs in the dual x carriage modules.
 
 The user interaction and network communication modules are developed by WEEDO3D.
 
+## Hardware Version 
+- X40 V1: The first mass production version. The production time is from November 2020 to June 2021.
+- X40 V2: The second production version. The production batch start from July 2021.
+The length in the Y-axis direction has been shortened. The Y-axis coordinate has been changed from (-2,310) to (-11,303).
 
 ## Compile requirements
 

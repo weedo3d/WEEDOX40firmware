@@ -42,7 +42,8 @@ void DGUS_Screen_ZOffset::Init()
 	dserial.SendString(ADDR_ZOFFSET_TEXT_BUTTON1, MMSG_CANCEL[wtvar_language], TEXTLEN_ZOFFSET_BUTTON);
 	dserial.SendString(ADDR_ZOFFSET_TEXT_BUTTON2, MMSG_SAVE[wtvar_language], TEXTLEN_ZOFFSET_BUTTON);
 	dserial.SendLongString_P(ADDR_ZOFFSET_TEXT_LINE, MMSG_ZOFFSET_LINE[wtvar_language], TEXTLEN_ZOFFSET_LINE);
-
+	dserial.SendString(ADDR_ZOFFSET_TEXT2_VALUE, PSTR("mm"), 4);
+	
 	holdontime = getcurrenttime();
 	updaterate = 200;
 	zState = ZOSE_BEGIN;

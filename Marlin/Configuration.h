@@ -38,11 +38,29 @@
  */
 #define CONFIGURATION_H_VERSION 020005
 
-#define SHORT_BUILD_VERSION "1.2.0"
+#define SHORT_BUILD_VERSION "1.2.5"
 
 #define HARDWARE_VERSION "R73B"
 
-#define MACHINE_NAME "X40"
+/**
+ * Hardware Version 
+ * 
+ * X40 V1: The first mass production version. The production time is from November 2020 to June 2021.
+ * X40 V2: The second production version. The production batch start from July 2021.
+ * 
+ */
+
+//#define MACHINE_X40V1
+
+#define MACHINE_X40V2
+
+#ifdef MACHINE_X40V1
+#define MACHINE_NAME "X40V1"
+#endif
+
+#ifdef MACHINE_X40V2
+#define MACHINE_NAME "X40V2"
+#endif
 
 /**
  * Select the serial port on the board to use for communication with the host.
@@ -217,8 +235,8 @@
 // Above this temperature the heater will be switched off.
 // This can protect components from overheating, but NOT from shorts and failures.
 // (Use MINTEMP for thermistor short/failure protection.)
-#define HEATER_0_MAXTEMP 275
-#define HEATER_1_MAXTEMP 275
+#define HEATER_0_MAXTEMP 310
+#define HEATER_1_MAXTEMP 310
 #define HEATER_2_MAXTEMP 275
 #define HEATER_3_MAXTEMP 275
 #define HEATER_4_MAXTEMP 275
@@ -682,12 +700,23 @@
 #define Y_BED_SIZE 310
 
 // Travel limits (mm) after homing, corresponding to endstop positions.
+#ifdef MACHINE_X40V1
 #define X_MIN_POS -47
 #define Y_MIN_POS -2
 #define Z_MIN_POS 0
 #define X_MAX_POS 355
 #define Y_MAX_POS 310
 #define Z_MAX_POS 405
+#endif
+
+#ifdef MACHINE_X40V2
+#define X_MIN_POS -47 
+#define Y_MIN_POS -11
+#define Z_MIN_POS 0
+#define X_MAX_POS 355
+#define Y_MAX_POS 303
+#define Z_MAX_POS 405
+#endif
 
 /**
  * Software Endstops

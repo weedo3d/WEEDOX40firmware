@@ -17,8 +17,7 @@ public:
 	void KeyProcess(void);
 
 private:
-	void ShowButtonOn(uint8_t id);
-	void ShowHelp(void);
+	void ShowFeedrate(void);
 
 	int16_t temp_feedrate;
 };

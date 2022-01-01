@@ -310,6 +310,15 @@ void DGUSSerial::SendFloatString(uint16_t addr, float data)
     
 }
 
+void DGUSSerial::SendPercentString(uint16_t addr, uint16_t data)
+{
+	char a[6];
+	ZERO(a);
+	sprintf_P(a, PSTR("%d"), data);
+	dserial.SendString(addr, a, 6);
+    
+}
+
 DGUSSerial::DGUSSerial()
 {
 

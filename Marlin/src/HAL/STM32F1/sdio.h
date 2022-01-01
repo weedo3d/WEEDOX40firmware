@@ -100,8 +100,10 @@
 #define SDIO_DATA_TIMEOUT                    100U           /* Read data transfer timeout */
 #define SDIO_WRITE_TIMEOUT                   200U           /* Write data transfer timeout */
 
+// #define SDIO_CLOCK                           18000000       /* 18 MHz */
 // perron fix sd read error
-#define SDIO_CLOCK                           4500000 /* 4,5 MHz */
+// #define SDIO_CLOCK                           4500000 /* 4,5 MHz */
+#define SDIO_CLOCK                           2250000    /* 2.25 MHz */
 
 // ------------------------
 // Types

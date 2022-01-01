@@ -1260,11 +1260,12 @@ void setup()
     else
         runout.enabled = true;
 
+    queue.enqueue_one_now("M203 Z20");
     wtvar_skipTest = 0;
     if (wtvar_gohome == 1)
     {
         queue.enqueue_one_now("G28 X Y F3000");
-        queue.enqueue_one_now("G1 Y270");
+        queue.enqueue_one_now("G1 Y250 F600");
         queue.enqueue_one_now("M18");
 #if ENABLED(POWER_LOSS_RECOVERY)
         card.removeJobRecoveryFile();
