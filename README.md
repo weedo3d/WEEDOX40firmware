@@ -26,7 +26,9 @@ The length in the Y-axis direction has been shortened. The Y-axis coordinate has
 
 X40 uses a customized bootloader, which requires a customized download program for firmware update.  
 
-The Windows version of the download program WEEDOIAP.exe is located in the /buildroot/upload/ directory. The macos version is still under development.
+The Windows version of the download program WEEDOIAP.exe is located in the [/buildroot/upload/WEEDOIAPV.exe](https://github.com/weedo3d/WEEDOX40firmware/blob/master/buildroot/upload/WEEDOIAPV.exe)
+
+The macos version is available in the [/buildroot/upload/X40IAP_MacOS.zip](https://github.com/weedo3d/WEEDOX40firmware/blob/master/buildroot/upload/X40IAP_MacOS.zip)
 
 Lanuch the WEEDOIAP.exe, open the firmware.bin file from build directory, choice the com port, then click the update.
 
